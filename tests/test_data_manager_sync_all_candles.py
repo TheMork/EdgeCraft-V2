@@ -14,6 +14,7 @@ def _make_sync_manager_stub() -> SyncManager:
     manager.db.parse_timeframe.side_effect = lambda tf: tf
     manager.ORDERED_TIMEFRAMES = ["1m", "1h", "4h"]
     manager._sync_candles_only = MagicMock()
+    manager.coin_list_service = MagicMock()
     return manager
 
 
@@ -39,7 +40,7 @@ def test_sync_data_candles_all_routes_to_all_timeframes_sync():
 
 def test_sync_top20_candles_all_forwards_mode_and_progress():
     manager = _make_sync_manager_stub()
-    manager.get_top_20_symbols = MagicMock(return_value=["BTC/USDT", "ETH/USDT"])
+    manager.coin_list_service.get_top_n_futures_usdt = MagicMock(return_value=["BTC/USDT", "ETH/USDT"])
 
     calls = []
 

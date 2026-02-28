@@ -1,5 +1,6 @@
-from fastapi import APIRouter, HTTPException, Query, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Query, BackgroundTasks, WebSocket, WebSocketDisconnect
 from typing import List, Literal, Optional
+import asyncio
 import re
 from pydantic import BaseModel
 from src.database import QuestDBManager
@@ -25,50 +26,61 @@ sync_manager = SyncManager(db_manager=db)
 sync_job_store = SyncJobStore()
 
 
-def _run_single_sync_job(
+def _run_multi_sync_job(
     job_id: str,
-    symbol: str,
+    symbols: List[str],
     start_date: str,
     end_date: Optional[str],
     sync_mode: str,
-    timeframe: str,
+    timeframes: List[str],
 ) -> None:
     sync_job_store.update(
         job_id,
         status="running",
         progress=1,
-        message=f"Starting sync for {symbol}...",
+        message=f"Starting multi-sync for {len(symbols)} symbols...",
     )
 
-    def _progress(progress: int, message: str) -> None:
-        sync_job_store.update(
-            job_id,
-            status="running",
-            progress=progress,
-            message=message,
-        )
+    total_tasks = len(symbols) * len(timeframes)
+    completed_tasks = 0
 
     try:
-        sync_manager.sync_data(
-            symbol,
-            start_date,
-            end_date,
-            sync_mode=sync_mode,
-            timeframe=timeframe,
-            progress_callback=_progress,
-        )
+        for symbol in symbols:
+            for timeframe in timeframes:
+                def _progress(progress: int, message: str) -> None:
+                    # Map individual task progress (0-100) to overall progress
+                    overall_base = (completed_tasks / total_tasks) * 100
+                    overall_progress = overall_base + (progress / total_tasks)
+
+                    sync_job_store.update(
+                        job_id,
+                        status="running",
+                        progress=int(overall_progress),
+                        message=f"[{symbol} {timeframe}] {message}",
+                    )
+
+                sync_manager.sync_data(
+                    symbol,
+                    start_date,
+                    end_date,
+                    sync_mode=sync_mode,
+                    timeframe=timeframe,
+                    progress_callback=_progress,
+                )
+                completed_tasks += 1
+
         sync_job_store.update(
             job_id,
             status="completed",
             progress=100,
-            message=f"Sync completed for {symbol}.",
+            message=f"Sync completed for {len(symbols)} symbols.",
         )
     except Exception as e:
         sync_job_store.update(
             job_id,
             status="failed",
             progress=100,
-            message=f"Sync failed for {symbol}: {e}",
+            message=f"Sync failed: {e}",
         )
 
 
@@ -119,38 +131,42 @@ def _run_top20_sync_job(
 @router.post("/sync", response_model=SyncResponse)
 async def sync_data_endpoint(request: SyncRequest, background_tasks: BackgroundTasks):
     """
-    Synchronizes historical trade data for the given symbol.
+    Synchronizes historical trade data for the given symbols.
     Checks existing data and downloads missing parts using Bulk Downloader (ZIPs) and CCXT (API).
     """
-    # Sanitize symbol
-    if not re.match(r"^[a-zA-Z0-9/_:-]+$", request.symbol):
-        raise HTTPException(status_code=400, detail="Invalid symbol format")
+    # Sanitize symbols
+    for sym in request.symbols:
+        if not re.match(r"^[a-zA-Z0-9/_:-]+$", sym):
+            raise HTTPException(status_code=400, detail=f"Invalid symbol format: {sym}")
+
+    if not request.symbols or not request.timeframes:
+        raise HTTPException(status_code=400, detail="Symbols and timeframes lists cannot be empty")
 
     try:
         job = sync_job_store.create(
-            message=f"Data sync queued for {request.symbol}",
+            message=f"Data sync queued for {len(request.symbols)} symbols",
             details={
-                "symbol": request.symbol,
+                "symbols": request.symbols,
                 "start_date": request.start_date,
                 "end_date": request.end_date,
                 "sync_mode": request.sync_mode,
-                "timeframe": request.timeframe,
-                "type": "single",
+                "timeframes": request.timeframes,
+                "type": "multi",
             },
         )
         # Run in background to avoid blocking
         background_tasks.add_task(
-            _run_single_sync_job,
+            _run_multi_sync_job,
             job.job_id,
-            request.symbol,
+            request.symbols,
             request.start_date,
             request.end_date,
             request.sync_mode,
-            request.timeframe,
+            request.timeframes,
         )
         return SyncResponse(
             status="success",
-            message=f"Data sync started for {request.symbol} ({request.sync_mode}, {request.timeframe})",
+            message=f"Data sync started for {len(request.symbols)} symbols",
             job_id=job.job_id,
         )
     except Exception as e:
@@ -204,6 +220,36 @@ async def sync_job_status_endpoint(job_id: str):
         created_at=job.created_at,
         updated_at=job.updated_at,
     )
+
+@router.websocket("/ws/data-sync/{job_id}")
+async def websocket_data_sync(websocket: WebSocket, job_id: str):
+    await websocket.accept()
+    try:
+        while True:
+            job = sync_job_store.get(job_id)
+            if job is None:
+                await websocket.send_json({"error": "Sync job not found"})
+                break
+
+            await websocket.send_json({
+                "job_id": job.job_id,
+                "status": job.status,
+                "progress": job.progress,
+                "message": job.message,
+            })
+
+            if job.status in ["completed", "failed"]:
+                break
+
+            await asyncio.sleep(1) # Poll every second
+    except WebSocketDisconnect:
+        pass
+    except Exception as e:
+        print(f"WebSocket error: {e}")
+        try:
+             await websocket.close()
+        except:
+             pass
 
 @router.get("/coverage", response_model=DataCoverageResponse)
 async def get_data_coverage(

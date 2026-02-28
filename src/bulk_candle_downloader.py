@@ -7,98 +7,69 @@ from datetime import datetime, timedelta, timezone
 import sys
 from typing import Generator, Optional
 
-class BinanceBulkDownloader:
+class BinanceCandleDownloader:
     BASE_URL = "https://data.binance.vision/data/futures/um"
 
     def __init__(self, sandbox: bool = False):
-        # Sandbox doesn't really apply to historical data download usually
         self.sandbox = sandbox
 
-    def _get_monthly_url(self, symbol: str, year: int, month: int) -> str:
-        # Standardize symbol: remove /
+    def _get_monthly_url(self, symbol: str, timeframe: str, year: int, month: int) -> str:
         s = symbol.replace('/', '').upper()
-        # Format month: 01, 02...
         m = f"{month:02d}"
-        return f"{self.BASE_URL}/monthly/trades/{s}/{s}-trades-{year}-{m}.zip"
+        return f"{self.BASE_URL}/monthly/klines/{s}/{timeframe}/{s}-{timeframe}-{year}-{m}.zip"
 
-    def _get_daily_url(self, symbol: str, date: datetime) -> str:
+    def _get_daily_url(self, symbol: str, timeframe: str, date: datetime) -> str:
         s = symbol.replace('/', '').upper()
         d_str = date.strftime('%Y-%m-%d')
-        return f"{self.BASE_URL}/daily/trades/{s}/{s}-trades-{d_str}.zip"
+        return f"{self.BASE_URL}/daily/klines/{s}/{timeframe}/{s}-{timeframe}-{d_str}.zip"
 
     def download_and_extract(self, url: str) -> Optional[pd.DataFrame]:
-        """
-        Downloads a ZIP file from the given URL, extracts the CSV,
-        and returns a DataFrame.
-        Returns None if download fails (e.g., 404).
-        """
         print(f"Downloading {url}...", file=sys.stderr)
         try:
             resp = requests.get(url, stream=True, timeout=30)
             if resp.status_code == 404:
-                # Expected for recent dates or incomplete months
                 return None
             resp.raise_for_status()
 
             with zipfile.ZipFile(io.BytesIO(resp.content)) as z:
-                # Expecting one CSV file inside
                 csv_filename = z.namelist()[0]
                 with z.open(csv_filename) as f:
-                    # Binance Vision CSVs usually don't have headers for trades
-                    # Columns: id, price, qty, quote_qty, time, is_buyer_maker
-                    # We read without header and assign names manually
+                    # Binance klines CSV columns:
+                    # Open time, Open, High, Low, Close, Volume, Close time, Quote asset volume, Number of trades, Taker buy base asset volume, Taker buy quote asset volume, Ignore
                     df = pd.read_csv(
                         f,
                         header=None,
-                        names=['id', 'price', 'qty', 'quote_qty', 'time', 'is_buyer_maker'],
+                        names=['open_time', 'open', 'high', 'low', 'close', 'volume', 'close_time', 'quote_volume', 'trades', 'taker_buy_base', 'taker_buy_quote', 'ignore'],
                         dtype=str,
                         low_memory=False,
                     )
 
-                    # Heuristic: Check if first row is header (contains 'id')
-                    if not df.empty and isinstance(df.iloc[0]['id'], str) and 'id' in str(df.iloc[0]['id']).lower():
+                    if not df.empty and isinstance(df.iloc[0]['open_time'], str) and 'time' in str(df.iloc[0]['open_time']).lower():
                         df = df.iloc[1:]
 
                     if df.empty:
                         return None
 
-                    # Type conversion
-                    df['id'] = df['id'].astype(str)
-                    df['price'] = pd.to_numeric(df['price'], errors='coerce')
-                    df['amount'] = pd.to_numeric(df['qty'], errors='coerce') # rename qty to amount
+                    df['open'] = pd.to_numeric(df['open'], errors='coerce')
+                    df['high'] = pd.to_numeric(df['high'], errors='coerce')
+                    df['low'] = pd.to_numeric(df['low'], errors='coerce')
+                    df['close'] = pd.to_numeric(df['close'], errors='coerce')
+                    df['volume'] = pd.to_numeric(df['volume'], errors='coerce')
 
-                    # Ensure time is numeric before converting to datetime
-                    df['timestamp_ms'] = pd.to_numeric(df['time'], errors='coerce')
+                    df['timestamp_ms'] = pd.to_numeric(df['open_time'], errors='coerce')
                     df['timestamp'] = pd.to_datetime(df['timestamp_ms'], unit='ms')
 
-                    # Drop rows with NaN if conversion failed (e.g. bad lines or header leftovers)
-                    df.dropna(subset=['price', 'amount', 'timestamp'], inplace=True)
+                    df.dropna(subset=['open', 'high', 'low', 'close', 'volume', 'timestamp'], inplace=True)
 
-                    # Map is_buyer_maker to side
-                    # is_buyer_maker = True -> Maker is Buyer -> Taker is Seller -> SELL
-                    # is_buyer_maker = False -> Maker is Seller -> Taker is Buyer -> BUY
-                    df['side'] = df['is_buyer_maker'].apply(lambda x: 'SELL' if str(x).lower() == 'true' else 'BUY')
-
-                    # Return only necessary columns
-                    return df[['id', 'timestamp', 'side', 'price', 'amount']]
-
+                    return df[['timestamp', 'open', 'high', 'low', 'close', 'volume']]
         except Exception as e:
             print(f"Error downloading/processing {url}: {e}", file=sys.stderr)
             return None
 
-    def download_trades(self, symbol: str, start_date_str: str, end_date_str: Optional[str] = None) -> Generator[pd.DataFrame, None, None]:
-        """
-        Smart download strategy:
-        1. Parse dates.
-        2. Iterate months. If a full month is requested and available (i.e. not current month), plan monthly ZIP.
-        3. If partial month or current month, iterate days and plan daily ZIPs.
-        4. Submit to ThreadPoolExecutor and yield DataFrames as they complete (ordered).
-        """
-        # Parse start_date
+    def download_klines(self, symbol: str, timeframe: str, start_date_str: str, end_date_str: Optional[str] = None) -> Generator[pd.DataFrame, None, None]:
         try:
             start_date = datetime.fromisoformat(start_date_str.replace('Z', '+00:00'))
         except ValueError:
-            # Fallback if isoformat fails or other format
              start_date = pd.to_datetime(start_date_str).to_pydatetime()
 
         if start_date.tzinfo is None:
@@ -122,7 +93,6 @@ class BinanceBulkDownloader:
         while current_date < end_date:
             now = datetime.now(timezone.utc)
 
-            # Start of next month
             if current_date.month == 12:
                 next_month_start = datetime(current_date.year + 1, 1, 1, tzinfo=timezone.utc)
             else:
@@ -130,20 +100,19 @@ class BinanceBulkDownloader:
 
             is_start_of_month = (current_date.day == 1)
             is_full_month_in_range = (next_month_start <= end_date)
-            is_past_month = (next_month_start <= now) # Month has fully passed
+            is_past_month = (next_month_start <= now)
 
             if is_start_of_month and is_full_month_in_range and is_past_month:
-                urls_to_download.append((self._get_monthly_url(symbol, current_date.year, current_date.month), current_date, next_month_start))
+                urls_to_download.append((self._get_monthly_url(symbol, timeframe, current_date.year, current_date.month), current_date, next_month_start))
                 current_date = next_month_start
             else:
-                urls_to_download.append((self._get_daily_url(symbol, current_date), current_date, current_date + timedelta(days=1)))
+                urls_to_download.append((self._get_daily_url(symbol, timeframe, current_date), current_date, current_date + timedelta(days=1)))
                 current_date += timedelta(days=1)
 
         def _download_task(task_info):
             url, _start, _end = task_info
             return self.download_and_extract(url), task_info
 
-        # Use ThreadPoolExecutor for concurrent downloads
         with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
             future_to_url = {executor.submit(_download_task, task_info): task_info for task_info in urls_to_download}
 
@@ -152,19 +121,16 @@ class BinanceBulkDownloader:
                 df, task_info = future.result()
                 results[task_info[1]] = (df, task_info)
 
-            # Yield in order
             sorted_starts = sorted(results.keys())
             for start_ts in sorted_starts:
                 df, task_info = results[start_ts]
                 url, current_date, next_date = task_info
 
-                # If monthly fails, we need to fall back to daily sequentially here
-                # because we already planned it as monthly.
                 if df is None and 'monthly' in url:
                     print(f"Monthly zip not found for {current_date.strftime('%Y-%m')}, falling back to daily...", file=sys.stderr)
                     fallback_curr = current_date
                     while fallback_curr < next_date and fallback_curr < end_date:
-                        fallback_url = self._get_daily_url(symbol, fallback_curr)
+                        fallback_url = self._get_daily_url(symbol, timeframe, fallback_curr)
                         fallback_df = self.download_and_extract(fallback_url)
                         if fallback_df is not None:
                             fallback_df['symbol'] = symbol

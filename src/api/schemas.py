@@ -14,11 +14,11 @@ class HealthCheckResponse(BaseModel):
     status: str
 
 class SyncRequest(BaseModel):
-    symbol: str
+    symbols: List[str]
     start_date: str
     end_date: Optional[str] = None
     sync_mode: Literal["trades", "candles", "candles_1m", "candles_all"] = "trades"
-    timeframe: Literal["1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1M"] = "1m"
+    timeframes: List[Literal["1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1M"]] = ["1m"]
 
 class SyncResponse(BaseModel):
     status: str
