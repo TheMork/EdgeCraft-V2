@@ -1,7 +1,8 @@
 ccxt
 pandas
-questdb
 pytest
+pytest-postgresql
+psycopg2-binary
 fastapi
 uvicorn
 maturin==1.12.0
