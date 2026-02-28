@@ -6,7 +6,7 @@ class MockQuestDBManager:
     def __init__(self, host: str = 'mock'):
         self.host = host
 
-    def get_ohlcv(self, symbol: str, start_date: str, end_date: str, timeframe: str = "1h") -> pd.DataFrame:
+    def get_ohlcv(self, symbol: str, start_date: str, end_date: str, timeframe: str = "1h", allow_trade_backfill: bool = True) -> pd.DataFrame:
         # Generate synthetic data
         start = pd.to_datetime(start_date)
         end = pd.to_datetime(end_date)

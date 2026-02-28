@@ -51,31 +51,31 @@
 
 #### Sprint 2.1 – Concurrent Bulk-Downloader (1–2 Wochen)
 > *TimescaleDB (Sprint 1.1) muss abgeschlossen sein.*
-- [ ] **2.1.1** `BinanceBulkDownloader` für Concurrent-Downloads umbauen:
+- [x] **2.1.1** `BinanceBulkDownloader` für Concurrent-Downloads umbauen:
   - `ThreadPoolExecutor` (I/O-bound wegen HTTP) mit konfigurierter Worker-Anzahl (Standard: 8)
   - Pro (Symbol × Zeitraum) Task parallel – Ergebnisse werden gesammelt und in Batches in TimescaleDB geschrieben
-- [ ] **2.1.2** `CoinListService` (`src/services/coin_list_service.py`) implementieren:
+- [x] **2.1.2** `CoinListService` (`src/services/coin_list_service.py`) implementieren:
   - `get_top_n_futures_usdt(n: int)` – ruft Binance Public API ab und liefert Top-N nach 24h-Volumen
   - `get_available_futures_symbols()` – vollständige Liste aller USDT-Perpetuals
-- [ ] **2.1.3** Download-Jobs-Datenstruktur: `DownloadJob(symbol, start, end, timeframes[])` + Progress-Tracking
-- [ ] **2.1.4** API-Endpunkt `POST /api/v1/data/sync` mit Body:
+- [x] **2.1.3** Download-Jobs-Datenstruktur: `DownloadJob(symbol, start, end, timeframes[])` + Progress-Tracking
+- [x] **2.1.4** API-Endpunkt `POST /api/v1/data/sync` mit Body:
   ```json
   { "symbols": ["BTCUSDT", "ETHUSDT"], "start": "2024-01-01", "end": "2024-12-31", "timeframes": ["1h", "4h", "1d"] }
   ```
-- [ ] **2.1.5** API-Endpunkt `GET /api/v1/data/sync/status` – gibt laufenden Fortschritt zurück (Symbol, %, ETA)
-- [ ] **2.1.6** WebSocket-Stream `/ws/data-sync` für Echtzeit-Progress im Frontend
-- [ ] **2.1.7** Ingest in TimescaleDB via Bulk-`execute_values` in Batches (mind. 10.000 Rows pro Batch) für maximale Schreibgeschwindigkeit
-- [ ] **2.1.8** Tests: Paralleler Download-Mock, Fortschritts-Reporting (`tests/test_bulk_downloader_concurrent.py`)
+- [x] **2.1.5** API-Endpunkt `GET /api/v1/data/sync/status` – gibt laufenden Fortschritt zurück (Symbol, %, ETA)
+- [x] **2.1.6** WebSocket-Stream `/ws/data-sync` für Echtzeit-Progress im Frontend
+- [x] **2.1.7** Ingest in TimescaleDB via Bulk-`execute_values` in Batches (mind. 10.000 Rows pro Batch) für maximale Schreibgeschwindigkeit
+- [x] **2.1.8** Tests: Paralleler Download-Mock, Fortschritts-Reporting (`tests/test_bulk_downloader_concurrent.py`)
 
 #### Sprint 2.2 – Candle-Download (direkt, ohne Trades) (1 Woche)
 > *Für längere Zeiträume ist der direkte Candle-Download via Binance Vision effizienter als Trades aggregieren.*
-- [ ] **2.2.1** `BinanceCandleDownloader` (`src/bulk_candle_downloader.py`) implementieren:
+- [x] **2.2.1** `BinanceCandleDownloader` (`src/bulk_candle_downloader.py`) implementieren:
   - Lädt OHLCV direkt aus `data.binance.vision/data/futures/um/monthly/klines/`
   - Unterstützt alle Timeframes (1m, 5m, 15m, 1h, 4h, 1d …)
   - Fallback auf Daily-ZIPs wenn monatliche nicht verfügbar
-- [ ] **2.2.2** `SyncManager` (`src/data_manager.py`) um `sync_mode="candles"` erweitern (nutzt neuen Downloader)
-- [ ] **2.2.3** Automatische Gap-Detection: prüft welche Zeiträume in TimescaleDB fehlen und lädt nur diese nach
-- [ ] **2.2.4** Tests: Gap-Detection-Logik, Candle-Parse (`tests/test_candle_downloader.py`)
+- [x] **2.2.2** `SyncManager` (`src/data_manager.py`) um `sync_mode="candles"` erweitern (nutzt neuen Downloader)
+- [x] **2.2.3** Automatische Gap-Detection: prüft welche Zeiträume in TimescaleDB fehlen und lädt nur diese nach
+- [x] **2.2.4** Tests: Gap-Detection-Logik, Candle-Parse (`tests/test_candle_downloader.py`)
 
 ---
 

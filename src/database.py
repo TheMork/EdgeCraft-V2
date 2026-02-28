@@ -346,22 +346,29 @@ class QuestDBManager:
         table_name = self._ohlcv_table_name(safe_timeframe)
         self.create_ohlcv_table(timeframe=safe_timeframe)
 
+        chunk_size = 10000
+        total_rows = len(df)
+
         try:
             with Sender.from_conf(self._sender_conf()) as sender:
-                for _, row in df.iterrows():
-                    sender.row(
-                        table_name,
-                        symbols={'symbol': symbol},
-                        columns={
-                            'open': float(row['open']),
-                            'high': float(row['high']),
-                            'low': float(row['low']),
-                            'close': float(row['close']),
-                            'volume': float(row['volume'])
-                        },
-                        at=TimestampNanos.from_datetime(row['timestamp'])
-                    )
-                sender.flush()
+                for start in range(0, total_rows, chunk_size):
+                    end = min(start + chunk_size, total_rows)
+                    chunk = df.iloc[start:end]
+
+                    for _, row in chunk.iterrows():
+                        sender.row(
+                            table_name,
+                            symbols={'symbol': symbol},
+                            columns={
+                                'open': float(row['open']),
+                                'high': float(row['high']),
+                                'low': float(row['low']),
+                                'close': float(row['close']),
+                                'volume': float(row['volume'])
+                            },
+                            at=TimestampNanos.from_datetime(row['timestamp'])
+                        )
+                    sender.flush()
         except IngressError as e:
             print(f"Ingress Error (OHLCV): {e}", file=sys.stderr)
         except Exception as e:
@@ -398,23 +405,30 @@ class QuestDBManager:
         if df.empty:
             return
 
+        chunk_size = 10000
+        total_rows = len(df)
+
         try:
             with Sender.from_conf(self._sender_conf()) as sender:
-                for _, row in df.iterrows():
-                    sender.row(
-                        'trades',
-                        symbols={
-                            'symbol': symbol,
-                            'id': str(row['id']),
-                            'side': str(row['side'])
-                        },
-                        columns={
-                            'price': float(row['price']),
-                            'amount': float(row['amount'])
-                        },
-                        at=TimestampNanos.from_datetime(row['timestamp'])
-                    )
-                sender.flush()
+                for start in range(0, total_rows, chunk_size):
+                    end = min(start + chunk_size, total_rows)
+                    chunk = df.iloc[start:end]
+
+                    for _, row in chunk.iterrows():
+                        sender.row(
+                            'trades',
+                            symbols={
+                                'symbol': symbol,
+                                'id': str(row['id']),
+                                'side': str(row['side'])
+                            },
+                            columns={
+                                'price': float(row['price']),
+                                'amount': float(row['amount'])
+                            },
+                            at=TimestampNanos.from_datetime(row['timestamp'])
+                        )
+                    sender.flush()
         except IngressError as e:
             print(f"Ingress Error (Trades): {e}", file=sys.stderr)
         except Exception as e:

@@ -78,6 +78,7 @@ def test_on_bar_opens_long_when_bullish_confluence_reached():
     s._divergence_snapshot = MagicMock(
         return_value=(3, 0, 3.4, 0.0, 100.0, 1.2, 25.0, 101.0, 100.0, 2200.0, 1000.0, {})
     )
+    s._entry_filters = MagicMock(return_value=True)
 
     s.on_bar(_bar(100.0))
     assert s.broker.orders, "expected a long entry order"
@@ -92,6 +93,7 @@ def test_on_bar_opens_short_when_bearish_confluence_reached():
     s._divergence_snapshot = MagicMock(
         return_value=(0, 3, 0.0, 3.6, 100.0, 1.2, 25.0, 99.0, 100.0, 2200.0, 1000.0, {})
     )
+    s._entry_filters = MagicMock(return_value=True)
 
     s.on_bar(_bar(100.0))
     assert s.broker.orders, "expected a short entry order"
