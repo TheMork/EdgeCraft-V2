@@ -1,14 +1,12 @@
 services:
-  questdb:
-    image: questdb/questdb:latest
-    container_name: questdb
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    container_name: timescaledb
     ports:
-      - "9000:9000"
-      - "9009:9009"
-      - "8812:8812"
+      - "5432:5432"
     environment:
-      - QDB_CAIRO_COMMIT_LAG=1000
-      - QDB_CAIRO_MAX_UNCOMMITTED_ROWS=10000
-      - QDB_JAVA_OPTS=-Xms16g -Xmx16g
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=edgecraft
     volumes:
-      - ./data/questdb:/var/lib/questdb
+      - ./data/timescaledb:/var/lib/postgresql/data
