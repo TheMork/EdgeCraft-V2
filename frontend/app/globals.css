@@ -1,0 +1,135 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0a0a0a;
+  --surface: #0a0a0a; /* Terminal style usually has uniform black background, maybe borders define areas */
+  --foreground: #00ff41;
+
+  --primary: #00ff41;
+  --primary-foreground: #0a0a0a;
+
+  --bullish: #00ff41;
+  --bearish: #ff003c;
+  --funding: #ab47bc;
+  --accent: #00ff41;
+  --accent-foreground: #0a0a0a;
+
+  --text-primary: #00ff41;
+  --text-muted: #008f11;
+
+  /* Shadcn/UI compatibility */
+  --card: #0a0a0a;
+  --card-foreground: #00ff41;
+  --popover: #0a0a0a;
+  --popover-foreground: #00ff41;
+
+  --secondary: #0f1a10;
+  --secondary-foreground: #00ff41;
+
+  --muted: #0f1a10;
+  --muted-foreground: #008f11;
+
+  --destructive: #ff003c;
+  --destructive-foreground: #0a0a0a;
+
+  --border: #00441b;
+  --input: #00441b;
+  --ring: #00ff41;
+
+  --radius: 0; /* Terminal aesthetic usually sharp corners */
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-bullish: var(--bullish);
+  --color-bearish: var(--bearish);
+  --color-funding: var(--funding);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-text-primary: var(--text-primary);
+  --color-text-muted: var(--text-muted);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-foreground: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --radius-lg: var(--radius);
+  --radius-md: var(--radius);
+  --radius-sm: var(--radius);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  overflow-x: hidden;
+}
+
+/* Scanline Effect */
+body::before {
+  content: " ";
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(
+      to bottom,
+      rgba(18, 16, 16, 0) 50%,
+      rgba(0, 0, 0, 0.25) 50%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 0, 0, 0.06),
+      rgba(0, 255, 0, 0.02),
+      rgba(0, 0, 255, 0.06)
+    );
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Text Glow Utility */
+.text-glow {
+  text-shadow: 0 0 5px var(--primary);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border: 1px solid var(--background);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* Selection */
+::selection {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}

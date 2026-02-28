@@ -1,0 +1,32 @@
+
+> frontend@0.1.0 dev
+> next dev
+
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /home/mork/package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * /home/mork/Projekte/EdgeCraft/frontend/package-lock.json
+
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.10.101:3000
+
+✓ Starting...
+✓ Ready in 374ms
+ GET / 200 in 375ms (compile: 249ms, render: 127ms)
+ GET / 200 in 39ms (compile: 1742µs, render: 37ms)
+ GET / 200 in 36ms (compile: 11ms, render: 25ms)
+ GET / 200 in 25ms (compile: 1639µs, render: 23ms)
+ GET / 200 in 32ms (compile: 6ms, render: 26ms)
+ GET / 200 in 20ms (compile: 999µs, render: 19ms)
+ GET / 200 in 49ms (compile: 4ms, render: 45ms)
+ GET / 200 in 25ms (compile: 1587µs, render: 23ms)
+ GET / 200 in 41ms (compile: 2ms, render: 39ms)
+ GET / 200 in 20ms (compile: 1057µs, render: 18ms)
+ GET / 200 in 23ms (compile: 1816µs, render: 22ms)
+ GET / 200 in 22ms (compile: 1924µs, render: 20ms)
+ GET / 200 in 124ms (compile: 47ms, render: 77ms)
+✓ Compiled in 9ms
+[?25h

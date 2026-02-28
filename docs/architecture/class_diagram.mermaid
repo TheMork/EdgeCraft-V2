@@ -1,0 +1,53 @@
+classDiagram
+    class EventLoop {
+        -PriorityQueue event_queue
+        -Datetime current_time
+        -Strategy strategy
+        -OrderManager order_manager
+        -PositionManager position_manager
+        -MatchingEngine matching_engine
+        +run()
+        +add_event(Event event)
+        -_process_event(Event event)
+        -_update_time(Datetime timestamp)
+    }
+
+    class OrderManager {
+        -Dict orders
+        +place_order(Order order)
+        +cancel_order(String order_id)
+        +on_fill(FillEvent event)
+        +get_order(String order_id) Order
+    }
+
+    class PositionManager {
+        -Dict positions
+        -Float wallet_balance
+        +update_position(FillEvent event)
+        +check_margin(Float current_price) Boolean
+        +update_funding(FundingEvent event)
+        +get_position(String symbol) Position
+    }
+
+    class MatchingEngine {
+        -Dict order_books
+        -Float latency_ms
+        +process_order(OrderEvent event)
+        +on_market_data(MarketEvent event)
+        -_check_fills(MarketEvent event) List~FillEvent~
+        -_simulate_latency(Event event)
+    }
+
+    class Event {
+        +Datetime timestamp
+        +EventType type
+    }
+
+    EventLoop *-- OrderManager
+    EventLoop *-- PositionManager
+    EventLoop *-- MatchingEngine
+    EventLoop o-- Event : processes
+
+    OrderManager ..> EventLoop : emits OrderEvent
+    MatchingEngine ..> EventLoop : emits FillEvent
+    PositionManager ..> EventLoop : emits LiquidationEvent
