@@ -23,6 +23,7 @@ interface ChartProps {
 }
 
 export interface EquityChartRef {
+  clear: () => void;
   update: (point: LineData) => void;
   setData: (data: LineData[]) => void;
 }
@@ -87,6 +88,11 @@ const EquityChart = forwardRef<EquityChartRef, ChartProps>((props, ref) => {
   const seriesRef = useRef<ISeriesApi<"Area"> | null>(null);
 
   useImperativeHandle(ref, () => ({
+    clear: () => {
+      if (seriesRef.current) {
+        seriesRef.current.setData([]);
+      }
+    },
     update: (point: LineData) => {
       if (seriesRef.current) {
         seriesRef.current.update(point);
