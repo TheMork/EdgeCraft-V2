@@ -5,6 +5,18 @@ class DemoStrategy(Strategy):
     """
     A simple demo strategy that trades based on candle color.
     """
+    NAME: str = "Demo"
+    DESCRIPTION: str = "Auto-generated description for Demo"
+    VERSION: str = "1.0.0"
+    AUTHOR: str = "EdgeCraft"
+    SUPPORTED_TIMEFRAMES: list = ["1h", "4h", "1d"]
+
+
+
+    @classmethod
+    def get_param_schema(cls):
+        return {}
+
     def on_start(self):
         print("DemoStrategy: Simulation started.")
 

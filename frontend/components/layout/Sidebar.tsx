@@ -19,8 +19,10 @@ export function Sidebar() {
   } = useStore();
 
   const navItems = [
+    { label: 'Data Manager', href: '/data', icon: Activity },
     { label: 'Single Simulation', href: '/simulation', icon: Activity },
     { label: 'Batch Backtester', href: '/batch', icon: Layers },
+    { label: 'Parameter Sweep', href: '/sweep', icon: TrendingUp },
   ];
 
   return (

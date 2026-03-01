@@ -18,8 +18,20 @@ class MDEMADV4Strategy(Strategy):
     - ATR-based Stop Loss for downside protection.
     - Optimized for 4h and higher timeframes.
     """
+    NAME: str = "MDEMADV4"
+    DESCRIPTION: str = "Auto-generated description for MDEMADV4"
+    VERSION: str = "1.0.0"
+    AUTHOR: str = "EdgeCraft"
+    SUPPORTED_TIMEFRAMES: list = ["1h", "4h", "1d"]
+
+
 
     EPS = 1e-9
+
+
+    @classmethod
+    def get_param_schema(cls):
+        return {}
 
     def __init__(
         self,

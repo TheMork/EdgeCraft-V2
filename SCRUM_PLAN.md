@@ -125,7 +125,7 @@
 **Ziel:** Eine UI, die einer echten Backtesting-Station würdig ist – konfigurierbar, übersichtlich, per Klick bedienbar.
 
 #### Sprint 5.1 – Coin-Auswahl & Datenverwaltung (1 Woche)
-- [ ] **5.1.1** **Data-Manager-Seite** (`/data`):
+- [x] **5.1.1** **Data-Manager-Seite** (`/data`):
   - „Top 20 laden"-Button – ruft `CoinListService.get_top_n_futures_usdt(20)` auf
   - Coin-Liste mit Checkboxen zur Einzel-Auswahl
   - Zeitraumauswahl (DatePicker: Start / End) + Timeframe-Multiselect
@@ -134,7 +134,7 @@
   - Tabelle: bereits verfügbare Daten (Symbol, Timeframe, Von, Bis, Candle-Anzahl)
 
 #### Sprint 5.2 – Backtesting-Konfigurationspage (1–2 Wochen)
-- [ ] **5.2.1** **Simulation-Seite** (`/simulation`) – komplett überarbeiten:
+- [x] **5.2.1** **Simulation-Seite** (`/simulation`) – komplett überarbeiten:
   - Symbol-Auswahl (Dropdown oder Multi-Select aus verfügbaren Coins)
   - Zeitraum: Start / End (DatePicker)
   - Timeframe-Dropdown
@@ -147,7 +147,7 @@
   - Trade-Tabelle: alle Trades mit Entry/Exit/PnL
 
 #### Sprint 5.3 – Parameter-Sweep-UI (1–2 Wochen)
-- [ ] **5.3.1** **Sweep-Seite** (`/sweep`):
+- [x] **5.3.1** **Sweep-Seite** (`/sweep`):
   - Strategie wählen
   - Pro Parameter: Min / Max / Step (Slider oder Eingabe) → erzeugt Grid
   - Symbol(e) auswählen (Checkboxen, inkl. „Top-10 automatisch")
@@ -157,13 +157,13 @@
   - Ergebnistabelle: sortierbar nach Sharpe, Total Return, Drawdown
   - „Beste Konfiguration übernehmen"-Button → befüllt Simulation-Seite vorab
   - Export: Ergebnisse als CSV herunterladen
-- [ ] **5.3.2** Heatmap-Visualisierung für 2-Parameter-Sweeps (z. B. Lookback × Risk-Aversion)
+- [x] **5.3.2** Heatmap-Visualisierung für 2-Parameter-Sweeps (z. B. Lookback × Risk-Aversion)
 
 #### Sprint 5.4 – UI-Komfortfunktionen (1 Woche)
-- [ ] **5.4.1** Favoriten-/Watchlist-System: Coin-Sets speichern (z. B. „Top 20", „DeFi-Basket")
-- [ ] **5.4.2** Backtest-Ergebnis-History: alle vergangenen Runs auflisten, laden, vergleichen
-- [ ] **5.4.3** Dark Mode (systembasiert), responsive Layout
-- [ ] **5.4.4** Notifications-System: Toast-Meldungen für abgeschlossene Downloads / Sweeps
+- [x] **5.4.1** Favoriten-/Watchlist-System: Coin-Sets speichern (z. B. „Top 20", „DeFi-Basket")
+- [x] **5.4.2** Backtest-Ergebnis-History: alle vergangenen Runs auflisten, laden, vergleichen
+- [x] **5.4.3** Dark Mode (systembasiert), responsive Layout
+- [x] **5.4.4** Notifications-System: Toast-Meldungen für abgeschlossene Downloads / Sweeps
 
 ---
 
@@ -171,15 +171,15 @@
 **Ziel:** Sauberer Code, stabile Tests, Rust wo nötig.
 
 #### Sprint 6.1 – Rust-Extensions (parallel zu Epic 3)
-- [ ] **6.1.1** Rust-Broker Limit/SL/TP fertigstellen (s. Sprint 3.1)
-- [ ] **6.1.2** Matching-Engine als Rust-Extension für den Sweep (CPU-bound, massiv parallel)
-- [ ] **6.1.3** OHLCV-Indikator-Berechnung in Rust auslagern (RSI, EMA, ATR) – für Sweep-Performance
+- [x] **6.1.1** Rust-Broker Limit/SL/TP fertigstellen (s. Sprint 3.1)
+- [x] **6.1.2** Matching-Engine als Rust-Extension für den Sweep (CPU-bound, massiv parallel)
+- [x] **6.1.3** OHLCV-Indikator-Berechnung in Rust auslagern (RSI, EMA, ATR) – für Sweep-Performance
 
 #### Sprint 6.2 – Testinfrastruktur (1 Woche)
-- [ ] **6.2.1** `pytest` als einheitlicher Test-Runner, `conftest.py` mit TimescaleDB-Mock-Fixture (`pytest-postgresql`)
-- [ ] **6.2.2** GitHub-Actions-Workflow (`.github/workflows/ci.yml`): Tests bei jedem Push auf `main`
-- [ ] **6.2.3** Coverage-Report (Ziel: >70%)
-- [ ] **6.2.4** `start_dev.sh` überarbeiten: startet TimescaleDB (Docker), dann FastAPI, dann Next.js in der richtigen Reihenfolge mit Health-Check-Wartelogik
+- [x] **6.2.1** `pytest` als einheitlicher Test-Runner, `conftest.py` mit TimescaleDB-Mock-Fixture (`pytest-postgresql`)
+- [x] **6.2.2** GitHub-Actions-Workflow (`.github/workflows/ci.yml`): Tests bei jedem Push auf `main`
+- [x] **6.2.3** Coverage-Report (Ziel: >70%)
+- [x] **6.2.4** `start_dev.sh` überarbeiten: startet TimescaleDB (Docker), dann FastAPI, dann Next.js in der richtigen Reihenfolge mit Health-Check-Wartelogik
 
 ---
 
@@ -187,7 +187,7 @@
 **Ziel:** Eine Strategie = eine Datei. Einfach in `src/simulation/strategies/` ablegen → automatisch erkannt, im Backend registriert und im Frontend auswählbar. Einheitliches Interface, das alle Strategien einhalten müssen.
 
 #### Sprint 7.1 – Standardisiertes Strategy-Interface & Metadaten (1 Woche)
-- [ ] **7.1.1** `Strategy`-Basisklasse (`src/simulation/strategy.py`) um Pflicht-Metadaten erweitern:
+- [x] **7.1.1** `Strategy`-Basisklasse (`src/simulation/strategy.py`) um Pflicht-Metadaten erweitern:
   ```python
   class Strategy(ABC):
       # Jede Strategie MUSS diese Klassenvariablen definieren
@@ -197,7 +197,7 @@
       AUTHOR: str = ""            # Optional
       SUPPORTED_TIMEFRAMES: list  # z.B. ["1h", "4h", "1d"]
   ```
-- [ ] **7.1.2** `get_param_schema()` als Classmethod zur Basisklasse hinzufügen:
+- [x] **7.1.2** `get_param_schema()` als Classmethod zur Basisklasse hinzufügen:
   - Gibt JSON-Schema zurück, das alle `__init__`-Parameter beschreibt (Name, Typ, Default, Min, Max, Beschreibung)
   - Wird vom Frontend genutzt, um das Konfigurations-Formular dynamisch zu bauen
   - Beispiel-Output:
@@ -207,24 +207,24 @@
       "risk_aversion":  { "type": "float", "default": 2.0, "min": 0.1, "max": 10.0 }
     }
     ```
-- [ ] **7.1.3** Alle 15 bestehenden Strategien in `src/simulation/strategies/` mit `NAME`, `DESCRIPTION`, `SUPPORTED_TIMEFRAMES` und `get_param_schema()` nachrüsten
-- [ ] **7.1.4** `strategies/TEMPLATE.py` – leere Vorlage mit allen Pflichtfeldern und Kommentaren erstellen (zum Kopieren für neue Strategien)
-- [ ] **7.1.5** `docs/strategy_development.md` – Entwicklerdokumentation: Wie schreibe ich eine neue Strategie?
+- [x] **7.1.3** Alle 15 bestehenden Strategien in `src/simulation/strategies/` mit `NAME`, `DESCRIPTION`, `SUPPORTED_TIMEFRAMES` und `get_param_schema()` nachrüsten
+- [x] **7.1.4** `strategies/TEMPLATE.py` – leere Vorlage mit allen Pflichtfeldern und Kommentaren erstellen (zum Kopieren für neue Strategien)
+- [x] **7.1.5** `docs/strategy_development.md` – Entwicklerdokumentation: Wie schreibe ich eine neue Strategie?
 
 #### Sprint 7.2 – Strategy-Registry (Auto-Discovery) (0.5 Wochen)
-- [ ] **7.2.1** `StrategyRegistry` (`src/simulation/registry.py`) implementieren:
+- [x] **7.2.1** `StrategyRegistry` (`src/simulation/registry.py`) implementieren:
   - Scannt `src/simulation/strategies/` beim Start via `importlib` (kein manuelles Registrieren nötig)
   - Lädt alle `.py`-Dateien die eine `Strategy`-Subklasse enthalten
   - Ignoriert Dateien die mit `_` beginnen (Private/Templates)
   - Stellt bereit: `get_all()`, `get_by_name(name)`, `list_names()`
-- [ ] **7.2.2** `GET /api/v1/simulation/strategies` – gibt Liste aller registrierten Strategien zurück (Name, Beschreibung, Version, unterstützte Timeframes, Param-Schema)
-- [ ] **7.2.3** `SimulationRunner` nutzt Registry statt direktem Import – Strategie wird per Name instanziiert
-- [ ] **7.2.4** Tests: Registry lädt korrekte Strategien, ignoriert invalide Dateien (`tests/test_strategy_registry.py`)
+- [x] **7.2.2** `GET /api/v1/simulation/strategies` – gibt Liste aller registrierten Strategien zurück (Name, Beschreibung, Version, unterstützte Timeframes, Param-Schema)
+- [x] **7.2.3** `SimulationRunner` nutzt Registry statt direktem Import – Strategie wird per Name instanziiert
+- [x] **7.2.4** Tests: Registry lädt korrekte Strategien, ignoriert invalide Dateien (`tests/test_strategy_registry.py`)
 
 #### Sprint 7.3 – Test-Migration für Strategien (0.5 Wochen)
-- [ ] **7.3.1** Alle strategie-spezifischen Tests aus dem Root (`test_runner_sync.py`, `test_cache.py`, etc.) nach `tests/strategies/` verschieben
-- [ ] **7.3.2** Pro Strategie: Minimal-Testfall der prüft ob sie läuft ohne Fehler (nutzt `MockQuestDBManager`)
-- [ ] **7.3.3** Integrations-Test: Registry-Discovery + Backtest-Run mit einer Strategie end-to-end
+- [x] **7.3.1** Alle strategie-spezifischen Tests aus dem Root (`test_runner_sync.py`, `test_cache.py`, etc.) nach `tests/strategies/` verschieben
+- [x] **7.3.2** Pro Strategie: Minimal-Testfall der prüft ob sie läuft ohne Fehler (nutzt `MockQuestDBManager`)
+- [x] **7.3.3** Integrations-Test: Registry-Discovery + Backtest-Run mit einer Strategie end-to-end
 
 ---
 
@@ -232,16 +232,16 @@
 **Ziel:** Nur relevante Dateien im Root. Klare Verzeichnisstruktur. Keine Debug-Skripte, Test-Dateien oder alte Artefakte im Root.
 
 #### Sprint 8.1 – Root-Cleanup (0.5 Wochen)
-- [ ] **8.1.1** Folgende Dateien aus dem Root **entfernen oder nach `tests/` verschieben**:
+- [x] **8.1.1** Folgende Dateien aus dem Root **entfernen oder nach `tests/` verschieben**:
   - `check_data.py`, `debug_data_check.py`, `debug_sender.py`, `debug_sender_v2.py` → `tools/debug/`
   - `test_cache.py`, `test_date_query.py`, `test_db_connection.py`, `test_event_loop.py`, `test_ohlcv_aggregation.py`, `test_runner_sync.py`, `test_ws.py` → `tests/`
   - `sweep_classic_mde.py`, `sweep_improved_mde.py`, `sweep_mde_optimized.py`, `sweep_mde_optimized_top20.py`, `sweep_timeframes_mde.py`, `sweep_v4_sl.py` → `tools/sweeps/` (bis SweepEngine fertig, dann deprecated)
   - `init_db.py`, `init_db_dummy_2024.py`, `populate_data.py`, `truncate_ohlcv.py` → in TimescaleDB-Init-Skript (`init_timescale.py`) integrieren, dann löschen
   - `server_BotRunner.ts`, `server_StrategyEngine.ts`, `server_files.txt` → prüfen ob noch gebraucht, ggf. nach `archive/` oder löschen
-- [ ] **8.1.2** Root darf danach nur noch enthalten: `README.md`, `SCRUM_PLAN.md`, `docker-compose.yml`, `requirements.txt`, `start_dev.sh`, `conftest.py`, `.gitignore`
+- [x] **8.1.2** Root darf danach nur noch enthalten: `README.md`, `SCRUM_PLAN.md`, `docker-compose.yml`, `requirements.txt`, `start_dev.sh`, `conftest.py`, `.gitignore`
 
 #### Sprint 8.2 – Verzeichnisstruktur finalisieren (0.5 Wochen)
-- [ ] **8.2.1** Finale Verzeichnisstruktur herstellen:
+- [x] **8.2.1** Finale Verzeichnisstruktur herstellen:
   ```
   EdgeCraft/
   ├── src/
@@ -264,8 +264,8 @@
   ├── docker-compose.yml
   └── requirements.txt
   ```
-- [ ] **8.2.2** `README.md` aktualisieren: Projektübersicht, Setup-Anleitung, Link zu `docs/strategy_development.md`
-- [ ] **8.2.3** `.gitignore` prüfen: `results/`, `*.db`, `__pycache__`, `node_modules`, `.env` einschließen
+- [x] **8.2.2** `README.md` aktualisieren: Projektübersicht, Setup-Anleitung, Link zu `docs/strategy_development.md`
+- [x] **8.2.3** `.gitignore` prüfen: `results/`, `*.db`, `__pycache__`, `node_modules`, `.env` einschließen
 
 ---
 
@@ -288,17 +288,17 @@ Woche 8-9:  Sprint 6.1 + 6.2 (Perf+CI)           →  Polishing
 
 ## Definition of Done (DoD)
 
-- [ ] Alle Unit-Tests grün (`pytest tests/`)
+- [x] Alle Unit-Tests grün (`pytest tests/`)
 - [ ] TimescaleDB läuft stabil – kein Absturz oder Timeout bei normaler Last
 - [ ] Coin-Download: Top-20 USDT-Perpetuals lassen sich per Klick herunterladen (1h, 4h, 1d, mind. 2 Jahre)
 - [ ] Backtest: Vollständig konfigurierbar über UI, inkl. Fees & Slippage
 - [ ] Sweep: Grid-Search über ≥3 Parameter läuft parallel, Ergebnisse in sortierter Tabelle
-- [ ] Strategy-Plugin: Neue `.py`-Datei in `strategies/` ablegen → erscheint automatisch in der UI
-- [ ] Strategy-Interface: Alle Strategien haben `NAME`, `DESCRIPTION`, `SUPPORTED_TIMEFRAMES`, `get_param_schema()`
+- [x] Strategy-Plugin: Neue `.py`-Datei in `strategies/` ablegen → erscheint automatisch in der UI
+- [x] Strategy-Interface: Alle Strategien haben `NAME`, `DESCRIPTION`, `SUPPORTED_TIMEFRAMES`, `get_param_schema()`
 - [ ] Strategy-Isolation: Strategy kann Balance nie direkt modifizieren (nur über Broker)
 - [ ] Performance: Ein 1-Jahres-1h-Backtest (8760 Bars) läuft in < 5 Sekunden
 - [ ] Kein Look-Ahead-Bias: Strategy erhält nur abgeschlossene Bars
-- [ ] Projektstruktur: Root enthält nur die 7 definierten Kerndateien, alle anderen sind korrekt einsortiert
+- [x] Projektstruktur: Root enthält nur die 7 definierten Kerndateien, alle anderen sind korrekt einsortiert
 
 ---
 

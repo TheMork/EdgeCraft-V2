@@ -22,6 +22,13 @@ class DoubleRSIDivergenceStrategy(Strategy):
     - RSI forms three higher lows,
     - Entry on strength after T3 (bullish confirmation candle).
     """
+    NAME: str = "DoubleRSIDivergence"
+    DESCRIPTION: str = "Auto-generated description for DoubleRSIDivergence"
+    VERSION: str = "1.0.0"
+    AUTHOR: str = "EdgeCraft"
+    SUPPORTED_TIMEFRAMES: list = ["1h", "4h", "1d"]
+
+
 
     EPS = 1e-9
     TIMEFRAME_PROFILES: Dict[str, Dict[str, Any]] = {
@@ -113,6 +120,11 @@ class DoubleRSIDivergenceStrategy(Strategy):
             "max_setup_age_bars": 24,
         },
     }
+
+
+    @classmethod
+    def get_param_schema(cls):
+        return {}
 
     def __init__(
         self,

@@ -19,8 +19,20 @@ class MDEMADEntropyStrategy(Strategy):
     but it computes the 'optimal' allocation between Cash and Asset based on its 
     rolling MAD and Expected Return.
     """
+    NAME: str = "MDEMADEntropy"
+    DESCRIPTION: str = "Auto-generated description for MDEMADEntropy"
+    VERSION: str = "1.0.0"
+    AUTHOR: str = "EdgeCraft"
+    SUPPORTED_TIMEFRAMES: list = ["1h", "4h", "1d"]
+
+
 
     EPS = 1e-9
+
+
+    @classmethod
+    def get_param_schema(cls):
+        return {}
 
     def __init__(
         self,

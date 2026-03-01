@@ -7,9 +7,20 @@ if TYPE_CHECKING:
     from .broker import Broker
 
 class Strategy(ABC):
-    def __init__(self):
+    NAME: str = ""
+    DESCRIPTION: str = ""
+    VERSION: str = "1.0.0"
+    AUTHOR: str = ""
+    SUPPORTED_TIMEFRAMES: list = []
+
+    def __init__(self, **kwargs):
         self.broker: Optional['Broker'] = None
         self.equity_curve: List[Dict[str, Any]] = []
+
+    @classmethod
+    def get_param_schema(cls) -> Dict[str, Any]:
+        """Returns JSON schema describing the __init__ parameters."""
+        return {}
 
     def set_broker(self, broker: 'Broker'):
         self.broker = broker

@@ -6,11 +6,23 @@ from src.simulation.strategies.mde_mad_v2 import MDEMADV2Strategy
 
 
 class MDEMADV2LeverageStrategy(MDEMADV2Strategy):
+
+    NAME: str = "MDEMADV2Leverage"
+    DESCRIPTION: str = "MDEMADV2LeverageStrategy description"
+    VERSION: str = "1.0.0"
+    AUTHOR: str = "EdgeCraft"
+    SUPPORTED_TIMEFRAMES: list = ["1h", "4h", "1d"]
+
     """
     MDE-MAD v2 with explicit target exposure scaling.
     The optimizer still computes a signal weight, then this strategy multiplies
     that signal by `target_leverage_multiplier` before rebalancing.
     """
+
+
+    @classmethod
+    def get_param_schema(cls):
+        return {}
 
     def __init__(
         self,

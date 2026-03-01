@@ -14,8 +14,20 @@ class MDEMADV2OptimizedStrategy(Strategy):
     - Added EMA 200 Trend Filter.
     - Added Turnover Penalty to reduce unnecessary trades.
     """
+    NAME: str = "MDEMADV2Optimized"
+    DESCRIPTION: str = "Auto-generated description for MDEMADV2Optimized"
+    VERSION: str = "1.0.0"
+    AUTHOR: str = "EdgeCraft"
+    SUPPORTED_TIMEFRAMES: list = ["1h", "4h", "1d"]
+
+
 
     EPS = 1e-9
+
+
+    @classmethod
+    def get_param_schema(cls):
+        return {}
 
     def __init__(
         self,
@@ -66,7 +78,7 @@ class MDEMADV2OptimizedStrategy(Strategy):
         self.fee_rate = max(0.0, float(fee_rate))
         self.slippage_rate = max(0.0, float(slippage_rate))
         self.edge_horizon_bars = max(1, int(edge_horizon_bars))
-                self.min_edge_over_cost_ratio = max(0.0, float(min_edge_over_cost_ratio))
+        self.min_edge_over_cost_ratio = max(0.0, float(min_edge_over_cost_ratio))
         self.be_trigger_percent = float(be_trigger_percent)
         self.be_buffer_percent = float(be_buffer_percent)
         self.trailing_stop_percent = float(trailing_stop_percent)
