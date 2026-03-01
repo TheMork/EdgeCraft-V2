@@ -4,7 +4,10 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
 import asyncio
 import queue
 import math
+from typing import List, Optional
+from pydantic import BaseModel
 from src.simulation.runner import SimulationRunner
+from src.simulation.multi_runner import MultiAssetSimulationRunner
 from src.simulation.strategies.demo import DemoStrategy
 from src.simulation.strategies.double_rsi_divergence import DoubleRSIDivergenceStrategy
 from src.simulation.strategies.multi_divergence import MultiIndicatorDivergenceStrategy
@@ -53,6 +56,49 @@ def _json_safe(value):
     except Exception:
         pass
     return value
+
+class MultiSimulationRequest(BaseModel):
+    symbols: List[str]
+    start_date: str
+    end_date: str
+    timeframe: str = "1m"
+    strategy_name: str = "demo"
+    initial_balance: float = 10000.0
+    leverage: int = 1
+    slippage_bps: float = 0.0
+
+@router.post("/multi")
+async def multi_simulation(request: MultiSimulationRequest):
+    # Setup strategy
+    if request.strategy_name == "momentum":
+        strategy_class = QuantitativeMomentumStrategy
+    elif request.strategy_name == "double_rsi_divergence":
+        strategy_class = DoubleRSIDivergenceStrategy
+    elif request.strategy_name == "multi_divergence":
+        strategy_class = MultiIndicatorDivergenceStrategy
+    elif request.strategy_name == "mde_mad_entropy":
+        strategy_class = MDEMADEntropyStrategy
+    else:
+        strategy_class = DemoStrategy
+
+    runner = MultiAssetSimulationRunner(
+        strategy_class=strategy_class,
+        symbols=request.symbols,
+        start_date=request.start_date,
+        end_date=request.end_date,
+        timeframe=request.timeframe,
+        initial_balance=request.initial_balance,
+        leverage=request.leverage,
+        slippage_bps=request.slippage_bps,
+    )
+
+    loop = asyncio.get_event_loop()
+    result = await loop.run_in_executor(None, runner.run)
+
+    return {
+        "status": "success",
+        "metrics": result.get("metrics", {})
+    }
 
 @router.websocket("/ws")
 async def websocket_endpoint(
