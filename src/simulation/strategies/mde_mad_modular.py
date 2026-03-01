@@ -13,8 +13,20 @@ class MDEMADModularStrategy(Strategy):
     MDE-MAD Modular Strategy:
     Allows toggling features to analyze their impact on Profit and Drawdown.
     """
+    NAME: str = "MDEMADModular"
+    DESCRIPTION: str = "Auto-generated description for MDEMADModular"
+    VERSION: str = "1.0.0"
+    AUTHOR: str = "EdgeCraft"
+    SUPPORTED_TIMEFRAMES: list = ["1h", "4h", "1d"]
+
+
 
     EPS = 1e-9
+
+
+    @classmethod
+    def get_param_schema(cls):
+        return {}
 
     def __init__(
         self,

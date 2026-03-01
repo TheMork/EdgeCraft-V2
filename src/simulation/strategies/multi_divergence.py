@@ -18,6 +18,13 @@ class MultiIndicatorDivergenceStrategy(Strategy):
     - Require a confluence threshold (count and score) for entries.
     - Apply quality filters (trend, ADX, volume, ATR regime).
     """
+    NAME: str = "MultiIndicatorDivergence"
+    DESCRIPTION: str = "Auto-generated description for MultiIndicatorDivergence"
+    VERSION: str = "1.0.0"
+    AUTHOR: str = "EdgeCraft"
+    SUPPORTED_TIMEFRAMES: list = ["1h", "4h", "1d"]
+
+
 
     EPS = 1e-9
     SUPPORTED_INDICATORS = (
@@ -31,6 +38,11 @@ class MultiIndicatorDivergenceStrategy(Strategy):
         "obv",
     )
     DEFAULT_INDICATORS = ("rsi", "macd_hist", "stoch_k", "williams_r", "cci", "mfi")
+
+
+    @classmethod
+    def get_param_schema(cls):
+        return {}
 
     def __init__(
         self,

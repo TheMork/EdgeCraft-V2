@@ -9,3 +9,7 @@ maturin==1.12.0
 httpx==0.28.1
 pyarrow
 optuna
+questdb==4.1.0
+scipy==1.17.1
+websockets==16.0
+pytest-asyncio==1.3.0

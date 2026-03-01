@@ -17,8 +17,20 @@ class MDEMADV3_1Strategy(Strategy):
     - DYNAMIC Volatility-Adjusted Lookback:
       Short lookback in high vol, long lookback in low vol.
     """
+    NAME: str = "MDEMADV3_1"
+    DESCRIPTION: str = "Auto-generated description for MDEMADV3_1"
+    VERSION: str = "1.0.0"
+    AUTHOR: str = "EdgeCraft"
+    SUPPORTED_TIMEFRAMES: list = ["1h", "4h", "1d"]
+
+
 
     EPS = 1e-9
+
+
+    @classmethod
+    def get_param_schema(cls):
+        return {}
 
     def __init__(
         self,

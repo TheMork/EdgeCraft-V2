@@ -14,8 +14,20 @@ class MDEMADV2Strategy(Strategy):
     - Added EMA 200 Trend Filter.
     - Added Turnover Penalty to reduce unnecessary trades.
     """
+    NAME: str = "MDEMADV2"
+    DESCRIPTION: str = "Auto-generated description for MDEMADV2"
+    VERSION: str = "1.0.0"
+    AUTHOR: str = "EdgeCraft"
+    SUPPORTED_TIMEFRAMES: list = ["1h", "4h", "1d"]
+
+
 
     EPS = 1e-9
+
+
+    @classmethod
+    def get_param_schema(cls):
+        return {}
 
     def __init__(
         self,

@@ -367,3 +367,11 @@ async def websocket_endpoint(
         # If simulation is still running (e.g. infinite loop which is not the case here),
         # we can't easily kill it unless we add a stop flag to runner.
         pass
+
+@router.get("/strategies")
+def list_strategies():
+    """Returns a list of available strategy classes with metadata."""
+    from src.simulation.registry import registry
+    return {
+        "strategies": registry.get_strategy_metadata()
+    }

@@ -23,8 +23,20 @@ class QuantitativeMomentumStrategy(Strategy):
     - dynamic breakeven/trailing stop management,
     - cooldown to reduce overtrading.
     """
+    NAME: str = "QuantitativeMomentum"
+    DESCRIPTION: str = "Auto-generated description for QuantitativeMomentum"
+    VERSION: str = "1.0.0"
+    AUTHOR: str = "EdgeCraft"
+    SUPPORTED_TIMEFRAMES: list = ["1h", "4h", "1d"]
+
+
 
     EPS = 1e-9
+
+
+    @classmethod
+    def get_param_schema(cls):
+        return {}
 
     def __init__(
         self,

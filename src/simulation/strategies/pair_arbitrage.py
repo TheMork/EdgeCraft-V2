@@ -26,8 +26,20 @@ class Thresholds:
 
 
 class PairArbitrageStrategy(Strategy):
+    NAME: str = "PairArbitrage"
+    DESCRIPTION: str = "Auto-generated description for PairArbitrage"
+    VERSION: str = "1.0.0"
+    AUTHOR: str = "EdgeCraft"
+    SUPPORTED_TIMEFRAMES: list = ["1h", "4h", "1d"]
+
+
     EPS = 1e-12
     MAX_HISTORY = 50_000
+
+
+    @classmethod
+    def get_param_schema(cls):
+        return {}
 
     def __init__(
         self,
