@@ -1,45 +1,49 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0a0a;
-  --surface: #0a0a0a; /* Terminal style usually has uniform black background, maybe borders define areas */
-  --foreground: #00ff41;
+  --background: #0f1115;
+  --surface: #111827;
+  --foreground: #f3f4f6; /* Gray-100 */
 
-  --primary: #00ff41;
-  --primary-foreground: #0a0a0a;
+  --primary: #10b981; /* Emerald-500 */
+  --primary-foreground: #0f1115;
 
-  --bullish: #00ff41;
-  --bearish: #ff003c;
-  --funding: #ab47bc;
-  --accent: #00ff41;
-  --accent-foreground: #0a0a0a;
+  --bullish: #10b981;
+  --bearish: #ef4444; /* Red-500 */
+  --funding: #8b5cf6; /* Violet-500 */
 
-  --text-primary: #00ff41;
-  --text-muted: #008f11;
+  --accent: #1e293b; /* Slate-800 */
+  --accent-foreground: #f8fafc; /* Slate-50 */
+
+  --text-primary: #f3f4f6;
+  --text-muted: #9ca3af; /* Gray-400 */
 
   /* Shadcn/UI compatibility */
-  --card: #0a0a0a;
-  --card-foreground: #00ff41;
-  --popover: #0a0a0a;
-  --popover-foreground: #00ff41;
+  --card: #131720; /* Slightly lighter than background */
+  --card-foreground: #f3f4f6;
+  --popover: #131720;
+  --popover-foreground: #f3f4f6;
 
-  --secondary: #0f1a10;
-  --secondary-foreground: #00ff41;
+  --secondary: #1e293b;
+  --secondary-foreground: #f8fafc;
 
-  --muted: #0f1a10;
-  --muted-foreground: #008f11;
+  --muted: #1e293b;
+  --muted-foreground: #9ca3af;
 
-  --destructive: #ff003c;
-  --destructive-foreground: #0a0a0a;
+  --destructive: #ef4444;
+  --destructive-foreground: #f8fafc;
 
-  --border: #00441b;
-  --input: #00441b;
-  --ring: #00ff41;
+  --border: #1f2937; /* Gray-800 */
+  --input: #1f2937;
+  --ring: #10b981;
 
-  --radius: 0; /* Terminal aesthetic usually sharp corners */
+  --radius: 0.75rem; /* 12px rounded corners */
 }
 
 @theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-fira-code), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
   --color-background: var(--background);
   --color-surface: var(--surface);
   --color-bullish: var(--bullish);
@@ -69,44 +73,15 @@
   --color-popover-foreground: var(--popover-foreground);
 
   --radius-lg: var(--radius);
-  --radius-md: var(--radius);
-  --radius-sm: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
   overflow-x: hidden;
-}
-
-/* Scanline Effect */
-body::before {
-  content: " ";
-  display: block;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: linear-gradient(
-      to bottom,
-      rgba(18, 16, 16, 0) 50%,
-      rgba(0, 0, 0, 0.25) 50%
-    ),
-    linear-gradient(
-      90deg,
-      rgba(255, 0, 0, 0.06),
-      rgba(0, 255, 0, 0.02),
-      rgba(0, 0, 255, 0.06)
-    );
-  background-size: 100% 2px, 3px 100%;
-  pointer-events: none;
-  z-index: 9999;
-}
-
-/* Text Glow Utility */
-.text-glow {
-  text-shadow: 0 0 5px var(--primary);
+  font-family: var(--font-sans);
 }
 
 /* Scrollbar Styling */
@@ -121,7 +96,8 @@ body::before {
 
 ::-webkit-scrollbar-thumb {
   background: var(--muted-foreground);
-  border: 1px solid var(--background);
+  border: 2px solid var(--background);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {

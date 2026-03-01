@@ -7,7 +7,6 @@
 - Network:       http://192.168.0.2:3000
 
 ✓ Starting...
-✓ Ready in 1147ms
-○ Compiling /sweep ...
- GET /sweep 200 in 6.1s (compile: 5.5s, render: 580ms)
- GET /sweep 200 in 95ms (compile: 6ms, render: 89ms)
+✓ Ready in 1102ms
+○ Compiling /simulation ...
+ GET /simulation 200 in 5.8s (compile: 5.3s, render: 540ms)

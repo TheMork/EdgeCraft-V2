@@ -645,153 +645,147 @@ export default function SimulationPage() {
         <CardHeader>
           <CardTitle>Simulation Control</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-5">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div className="space-y-2">
-              <Label>Market</Label>
-              <div className="flex flex-wrap gap-2 text-xs font-mono">
-                <span className="px-2 py-1 rounded border border-border bg-muted/30">{selectedSymbol}</span>
-                <span className="px-2 py-1 rounded border border-border bg-muted/30">Strategy: {selectedStrategy}</span>
-                <span className="px-2 py-1 rounded border border-border bg-muted/30">Timeframe: {selectedTimeframe}</span>
+        <CardContent className="space-y-6">
+          <div className="p-4 bg-muted/10 rounded-lg border border-border/50">
+            <h4 className="text-sm font-semibold mb-4 text-text-primary">Market Settings</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="startDate">Start Date</Label>
+                <Input
+                  id="startDate"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
               </div>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                variant="outline"
-                onClick={handleSync}
-                disabled={isSyncing || isRunning}
-              >
-                {isSyncing ? '...' : `Sync ${selectedTimeframe} Candles`}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={handleSyncTrades}
-                disabled={isSyncing || isRunning}
-              >
-                {isSyncing ? '...' : 'Sync Trades'}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={handleSyncAllTimeframes}
-                disabled={isSyncing || isRunning}
-              >
-                {isSyncing ? '...' : 'Sync All TF'}
-              </Button>
-              <Button
-                variant="default"
-                onClick={handleSyncTop20}
-                disabled={isSyncing || isRunning}
-              >
-                {isSyncing ? '...' : 'Sync Top 20'}
-              </Button>
-              <Button
-                variant="default"
-                onClick={handleSyncTop20AllCandles}
-                disabled={isSyncing || isRunning}
-              >
-                {isSyncing ? '...' : 'Sync Top 20 All TF'}
-              </Button>
+              <div className="space-y-2">
+                <Label htmlFor="endDate">End Date</Label>
+                <Input
+                  id="endDate"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
+              </div>
+              <div className="col-span-1 md:col-span-2 lg:col-span-2 flex items-end gap-2 flex-wrap">
+                <Button
+                  variant="outline"
+                  onClick={handleSync}
+                  disabled={isSyncing || isRunning}
+                >
+                  {isSyncing ? '...' : `Sync ${selectedTimeframe}`}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleSyncTrades}
+                  disabled={isSyncing || isRunning}
+                >
+                  {isSyncing ? '...' : 'Sync Trades'}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleSyncAllTimeframes}
+                  disabled={isSyncing || isRunning}
+                >
+                  {isSyncing ? '...' : 'Sync All TF'}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleSyncTop20}
+                  disabled={isSyncing || isRunning}
+                >
+                  {isSyncing ? '...' : 'Sync Top 20'}
+                </Button>
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
-            <div className="space-y-2">
-              <Label htmlFor="startDate">Start Date</Label>
-              <Input
-                id="startDate"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="endDate">End Date</Label>
-              <Input
-                id="endDate"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="leverage">Leverage</Label>
-              <Input
-                id="leverage"
-                type="number"
-                min={1}
-                max={125}
-                value={leverage}
-                onChange={(e) => setLeverage(Number(e.target.value))}
-                disabled={isRunning}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="minLeverage">Min Leverage</Label>
-              <Input
-                id="minLeverage"
-                type="number"
-                min={1}
-                max={125}
-                value={minLeverage}
-                onChange={(e) => setMinLeverage(Number(e.target.value))}
-                disabled={isRunning}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="maxLeverage">Max Leverage</Label>
-              <Input
-                id="maxLeverage"
-                type="number"
-                min={1}
-                max={125}
-                value={maxLeverage}
-                onChange={(e) => setMaxLeverage(Number(e.target.value))}
-                disabled={isRunning}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="streamMarketData">Live Chart</Label>
-              <label className="flex items-center gap-2 h-10 px-3 border border-border rounded bg-muted/20 text-sm">
-                <input
-                  id="streamMarketData"
-                  type="checkbox"
-                  checked={streamMarketData}
-                  onChange={(e) => setStreamMarketData(e.target.checked)}
+          <div className="p-4 bg-muted/10 rounded-lg border border-border/50">
+            <h4 className="text-sm font-semibold mb-4 text-text-primary">Strategy & Execution Settings</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="leverage">Leverage</Label>
+                <Input
+                  id="leverage"
+                  type="number"
+                  min={1}
+                  max={125}
+                  value={leverage}
+                  onChange={(e) => setLeverage(Number(e.target.value))}
                   disabled={isRunning}
                 />
-                <span>{streamMarketData ? 'Animate candles' : 'Fast mode'}</span>
-              </label>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="autoDownloadData">Auto-Download Data</Label>
-              <label className="flex items-center gap-2 h-10 px-3 border border-border rounded bg-muted/20 text-sm">
-                <input
-                  id="autoDownloadData"
-                  type="checkbox"
-                  checked={autoDownloadData}
-                  onChange={(e) => setAutoDownloadData(e.target.checked)}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="minLeverage">Min Leverage</Label>
+                <Input
+                  id="minLeverage"
+                  type="number"
+                  min={1}
+                  max={125}
+                  value={minLeverage}
+                  onChange={(e) => setMinLeverage(Number(e.target.value))}
                   disabled={isRunning}
                 />
-                <span>{autoDownloadData ? 'Enabled' : 'Disabled'}</span>
-              </label>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="enableShorts">Shorts</Label>
-              <label className="flex items-center gap-2 h-10 px-3 border border-border rounded bg-muted/20 text-sm">
-                <input
-                  id="enableShorts"
-                  type="checkbox"
-                  checked={enableShorts}
-                  onChange={(e) => setEnableShorts(e.target.checked)}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="maxLeverage">Max Leverage</Label>
+                <Input
+                  id="maxLeverage"
+                  type="number"
+                  min={1}
+                  max={125}
+                  value={maxLeverage}
+                  onChange={(e) => setMaxLeverage(Number(e.target.value))}
                   disabled={isRunning}
                 />
-                <span>{enableShorts ? 'Enabled' : 'Disabled'}</span>
-              </label>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="streamMarketData">Live Chart</Label>
+                <label className="flex items-center gap-2 h-10 px-3 border border-border rounded-md bg-background text-sm cursor-pointer hover:border-primary/50 transition-colors">
+                  <input
+                    id="streamMarketData"
+                    type="checkbox"
+                    className="accent-primary"
+                    checked={streamMarketData}
+                    onChange={(e) => setStreamMarketData(e.target.checked)}
+                    disabled={isRunning}
+                  />
+                  <span>{streamMarketData ? 'Animate candles' : 'Fast mode'}</span>
+                </label>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="autoDownloadData">Auto-Download Data</Label>
+                <label className="flex items-center gap-2 h-10 px-3 border border-border rounded-md bg-background text-sm cursor-pointer hover:border-primary/50 transition-colors">
+                  <input
+                    id="autoDownloadData"
+                    type="checkbox"
+                    className="accent-primary"
+                    checked={autoDownloadData}
+                    onChange={(e) => setAutoDownloadData(e.target.checked)}
+                    disabled={isRunning}
+                  />
+                  <span>{autoDownloadData ? 'Enabled' : 'Disabled'}</span>
+                </label>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="enableShorts">Shorts</Label>
+                <label className="flex items-center gap-2 h-10 px-3 border border-border rounded-md bg-background text-sm cursor-pointer hover:border-primary/50 transition-colors">
+                  <input
+                    id="enableShorts"
+                    type="checkbox"
+                    className="accent-primary"
+                    checked={enableShorts}
+                    onChange={(e) => setEnableShorts(e.target.checked)}
+                    disabled={isRunning}
+                  />
+                  <span>{enableShorts ? 'Enabled' : 'Disabled'}</span>
+                </label>
+              </div>
             </div>
           </div>
 
           {isMultiDivergence && (
-            <div className="rounded border border-border p-3 space-y-3">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">Multi Divergence Settings</p>
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+            <div className="p-4 bg-muted/10 rounded-lg border border-border/50">
+              <h4 className="text-sm font-semibold mb-4 text-text-primary">Multi Divergence Settings</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="multiIndicators">Indicators (CSV)</Label>
                   <Input
@@ -971,10 +965,11 @@ export default function SimulationPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="multiIncludeRegular">Regular Divergence</Label>
-                  <label className="flex items-center gap-2 h-10 px-3 border border-border rounded bg-muted/20 text-sm">
+                  <label className="flex items-center gap-2 h-10 px-3 border border-border rounded-md bg-background text-sm cursor-pointer hover:border-primary/50 transition-colors">
                     <input
                       id="multiIncludeRegular"
                       type="checkbox"
+                      className="accent-primary"
                       checked={multiIncludeRegular}
                       onChange={(e) => setMultiIncludeRegular(e.target.checked)}
                       disabled={isRunning}
@@ -984,10 +979,11 @@ export default function SimulationPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="multiIncludeHidden">Hidden Divergence</Label>
-                  <label className="flex items-center gap-2 h-10 px-3 border border-border rounded bg-muted/20 text-sm">
+                  <label className="flex items-center gap-2 h-10 px-3 border border-border rounded-md bg-background text-sm cursor-pointer hover:border-primary/50 transition-colors">
                     <input
                       id="multiIncludeHidden"
                       type="checkbox"
+                      className="accent-primary"
                       checked={multiIncludeHidden}
                       onChange={(e) => setMultiIncludeHidden(e.target.checked)}
                       disabled={isRunning}
@@ -997,10 +993,11 @@ export default function SimulationPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="multiRequireRegime">Regime Filter</Label>
-                  <label className="flex items-center gap-2 h-10 px-3 border border-border rounded bg-muted/20 text-sm">
+                  <label className="flex items-center gap-2 h-10 px-3 border border-border rounded-md bg-background text-sm cursor-pointer hover:border-primary/50 transition-colors">
                     <input
                       id="multiRequireRegime"
                       type="checkbox"
+                      className="accent-primary"
                       checked={multiRequireRegime}
                       onChange={(e) => setMultiRequireRegime(e.target.checked)}
                       disabled={isRunning}
@@ -1010,10 +1007,11 @@ export default function SimulationPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="multiRequireVolume">Volume Confirmation</Label>
-                  <label className="flex items-center gap-2 h-10 px-3 border border-border rounded bg-muted/20 text-sm">
+                  <label className="flex items-center gap-2 h-10 px-3 border border-border rounded-md bg-background text-sm cursor-pointer hover:border-primary/50 transition-colors">
                     <input
                       id="multiRequireVolume"
                       type="checkbox"
+                      className="accent-primary"
                       checked={multiRequireVolume}
                       onChange={(e) => setMultiRequireVolume(e.target.checked)}
                       disabled={isRunning}
@@ -1025,7 +1023,7 @@ export default function SimulationPage() {
             </div>
           )}
 
-          <div className="rounded border border-border p-3 text-xs text-muted-foreground space-y-1">
+          <div className="p-4 bg-muted/10 rounded-lg border border-border/50 text-xs text-muted-foreground space-y-1">
             {syncMessage && <p className="text-foreground">{syncMessage}</p>}
             {coverageLoading && <p>Loading available backtest range...</p>}
             {!coverageLoading && coverage?.available_start && coverage?.available_end && (
@@ -1045,12 +1043,12 @@ export default function SimulationPage() {
               <p className="font-mono break-words">OHLCV by timeframe: {ohlcvRangesText}</p>
             )}
             {!coverageLoading && coverageError && (
-              <p className="text-red-400">Could not load coverage: {coverageError}</p>
+              <p className="text-destructive">Could not load coverage: {coverageError}</p>
             )}
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            <Button onClick={startSimulation} disabled={isRunning}>
+          <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-border">
+            <Button className="w-[180px]" onClick={startSimulation} disabled={isRunning}>
               {isRunning ? 'Running...' : 'Start Simulation'}
             </Button>
             <Button variant="destructive" onClick={stopSimulation} disabled={!isRunning}>
@@ -1063,34 +1061,41 @@ export default function SimulationPage() {
       {metrics && <MetricsCard metrics={metrics} />}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Price Chart</CardTitle>
+          <Card className="flex flex-col h-[500px]">
+            <CardHeader className="py-4 border-b border-border/50">
+              <CardTitle className="text-sm font-semibold text-text-primary uppercase tracking-wider">Price Chart</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-1 p-0 overflow-hidden relative">
               <Chart ref={chartRef} />
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Equity Curve</CardTitle>
+          <Card className="flex flex-col h-[500px]">
+            <CardHeader className="py-4 border-b border-border/50">
+              <CardTitle className="text-sm font-semibold text-text-primary uppercase tracking-wider">Equity Curve</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-1 p-0 overflow-hidden relative">
               <EquityChart ref={equityChartRef} />
             </CardContent>
           </Card>
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Logs</CardTitle>
+        <CardHeader className="py-4 border-b border-border/50">
+          <CardTitle className="text-sm font-semibold text-text-primary uppercase tracking-wider">System Logs</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="h-40 overflow-y-auto bg-black/50 p-2 rounded text-xs font-mono">
-            {logs.map((l, i) => (
-              <div key={i}>{l}</div>
-            ))}
+        <CardContent className="p-0">
+          <div className="h-48 overflow-y-auto bg-background/50 p-4 text-[11px] leading-relaxed font-mono text-text-muted">
+            {logs.length === 0 ? (
+              <div className="flex h-full items-center justify-center opacity-50">No logs available</div>
+            ) : (
+              logs.map((l, i) => (
+                <div key={i} className="mb-1 border-b border-border/30 pb-1 last:border-0 hover:bg-muted/10">
+                  <span className="text-primary mr-2 opacity-70">[{new Date().toLocaleTimeString()}]</span>
+                  {l}
+                </div>
+              ))
+            )}
           </div>
         </CardContent>
       </Card>
