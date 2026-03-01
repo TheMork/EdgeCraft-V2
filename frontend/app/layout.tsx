@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
-import { Fira_Code } from "next/font/google";
+import { Inter, Fira_Code } from "next/font/google";
 import "./globals.css";
 import MainLayout from "@/components/layout/MainLayout";
 
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
 const firaCode = Fira_Code({
   subsets: ["latin"],
+  variable: "--font-fira-code",
 });
 
 export const metadata: Metadata = {
@@ -20,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${firaCode.className} antialiased`}
+        className={`${inter.variable} ${firaCode.variable} font-sans antialiased`}
       >
         <MainLayout>
           {children}

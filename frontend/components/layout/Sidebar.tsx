@@ -27,9 +27,9 @@ export function Sidebar() {
   ];
 
   return (
-    <aside className="w-[250px] border-r border-border bg-background flex flex-col h-full font-mono">
+    <aside className="w-[260px] border-r border-border bg-surface flex flex-col h-full font-sans shadow-[2px_0_8px_rgba(0,0,0,0.1)]">
       <div className="p-4 border-b border-border">
-        <h2 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">Navigation</h2>
+        <h2 className="text-xs font-bold text-text-muted mb-3 uppercase tracking-wider">Navigation</h2>
         <div className="space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -39,13 +39,13 @@ export function Sidebar() {
                 key={item.href}
                 href={item.href} 
                 className={cn(
-                  "flex items-center gap-2 p-2 text-sm transition-colors border",
+                  "flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-all duration-200",
                   isActive 
-                    ? "bg-primary/10 border-primary text-primary font-bold" 
-                    : "border-transparent hover:bg-muted/50 hover:border-border text-muted-foreground"
+                    ? "bg-primary/10 text-primary font-medium shadow-sm"
+                    : "text-text-muted hover:bg-muted/50 hover:text-text-primary"
                 )}
               >
-                <Icon size={16} />
+                <Icon size={16} className={isActive ? "text-primary" : "text-text-muted"} />
                 {item.label}
               </Link>
             );
@@ -54,9 +54,9 @@ export function Sidebar() {
       </div>
 
       <div className="p-4 border-b border-border">
-        <h2 className="text-sm font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Strategy</h2>
+        <h2 className="text-xs font-bold text-text-muted mb-2 uppercase tracking-wider">Strategy</h2>
         <select
-          className="w-full bg-black border border-border rounded-none p-2 text-sm text-primary focus:outline-none focus:ring-1 focus:ring-primary"
+          className="w-full bg-background border border-border rounded-md p-2 text-sm text-text-primary focus:outline-none focus:ring-1 focus:ring-primary shadow-sm transition-colors cursor-pointer"
           value={selectedStrategy}
           onChange={(e) =>
             setStrategy(
@@ -98,59 +98,60 @@ export function Sidebar() {
       </div>
 
       <div className="p-4 flex-1 overflow-y-auto">
-        <h2 className="text-sm font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Configuration</h2>
         <div className="space-y-4">
-          <div className="pt-4 border-t border-border">
-            <h2 className="text-sm font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Market</h2>
-            <div>
-              <label className="text-xs text-muted-foreground block mb-1">Symbol</label>
-              <select
-                className="w-full bg-black border border-border rounded-none p-2 text-sm text-primary mb-2 focus:outline-none focus:ring-1 focus:ring-primary"
-                value={selectedSymbol}
-                onChange={(e) => setSymbol(e.target.value)}
-              >
-                <option value="BTC/USDT">BTC/USDT</option>
-                <option value="ETH/USDT">ETH/USDT</option>
-                <option value="SOL/USDT">SOL/USDT</option>
-                <option value="BNB/USDT">BNB/USDT</option>
-                <option value="XRP/USDT">XRP/USDT</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground block mb-1">Timeframe</label>
-              <select
-                className="w-full bg-black border border-border rounded-none p-2 text-sm text-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                value={selectedTimeframe}
-                onChange={(e) => setTimeframe(e.target.value)}
-              >
-                <option value="1m">1m</option>
-                <option value="3m">3m</option>
-                <option value="5m">5m</option>
-                <option value="15m">15m</option>
-                <option value="30m">30m</option>
-                <option value="1h">1h</option>
-                <option value="2h">2h</option>
-                <option value="4h">4h</option>
-                <option value="6h">6h</option>
-                <option value="8h">8h</option>
-                <option value="12h">12h</option>
-                <option value="1d">1d</option>
-                <option value="3d">3d</option>
-                <option value="1w">1w</option>
-                <option value="1M">1M</option>
-              </select>
+          <div>
+            <h2 className="text-xs font-bold text-text-muted mb-3 uppercase tracking-wider">Market</h2>
+            <div className="space-y-3">
+              <div>
+                <label className="text-[11px] font-semibold text-text-muted block mb-1 uppercase tracking-wide">Symbol</label>
+                <select
+                  className="w-full bg-background border border-border rounded-md p-2 text-sm text-text-primary focus:outline-none focus:ring-1 focus:ring-primary shadow-sm transition-colors cursor-pointer"
+                  value={selectedSymbol}
+                  onChange={(e) => setSymbol(e.target.value)}
+                >
+                  <option value="BTC/USDT">BTC/USDT</option>
+                  <option value="ETH/USDT">ETH/USDT</option>
+                  <option value="SOL/USDT">SOL/USDT</option>
+                  <option value="BNB/USDT">BNB/USDT</option>
+                  <option value="XRP/USDT">XRP/USDT</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-[11px] font-semibold text-text-muted block mb-1 uppercase tracking-wide">Timeframe</label>
+                <select
+                  className="w-full bg-background border border-border rounded-md p-2 text-sm text-text-primary focus:outline-none focus:ring-1 focus:ring-primary shadow-sm transition-colors cursor-pointer"
+                  value={selectedTimeframe}
+                  onChange={(e) => setTimeframe(e.target.value)}
+                >
+                  <option value="1m">1m</option>
+                  <option value="3m">3m</option>
+                  <option value="5m">5m</option>
+                  <option value="15m">15m</option>
+                  <option value="30m">30m</option>
+                  <option value="1h">1h</option>
+                  <option value="2h">2h</option>
+                  <option value="4h">4h</option>
+                  <option value="6h">6h</option>
+                  <option value="8h">8h</option>
+                  <option value="12h">12h</option>
+                  <option value="1d">1d</option>
+                  <option value="3d">3d</option>
+                  <option value="1w">1w</option>
+                  <option value="1M">1M</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="p-4 border-t border-border space-y-2">
-        <button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold py-2 px-4 rounded-none flex items-center justify-center gap-2 cursor-pointer transition-colors border border-primary uppercase text-sm">
+      <div className="p-4 border-t border-border space-y-2 bg-surface">
+        <Link href="/simulation" className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-medium py-2 px-4 rounded-md flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 shadow-sm text-sm">
           <Play size={16} /> Run Backtest
-        </button>
-        <button className="w-full bg-transparent border border-primary text-primary hover:bg-primary hover:text-primary-foreground font-bold py-2 px-4 rounded-none flex items-center justify-center gap-2 cursor-pointer transition-colors uppercase text-sm">
+        </Link>
+        <Link href="/sweep" className="w-full bg-background border border-border text-text-primary hover:bg-accent font-medium py-2 px-4 rounded-md flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 shadow-sm text-sm">
           <TrendingUp size={16} /> Optimize
-        </button>
+        </Link>
       </div>
     </aside>
   );
