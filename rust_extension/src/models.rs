@@ -1,5 +1,6 @@
 use pyo3::prelude::*;
-use pyo3::types::PyDateTime;
+use pyo3::types::PyAny;
+use pyo3::Py;
 use std::cmp::Ordering;
 
 #[pyclass]
@@ -9,7 +10,7 @@ pub struct Event {
     #[pyo3(get)]
     pub r#type: i32,
     #[pyo3(get)]
-    pub payload: PyObject,
+    pub payload: Py<PyAny>,
 }
 
 impl Ord for Event {
@@ -36,7 +37,7 @@ impl Eq for Event {}
 #[pymethods]
 impl Event {
     #[new]
-    fn new(timestamp: &Bound<'_, PyDateTime>, r#type: i32, payload: PyObject) -> PyResult<Self> {
+    fn new(timestamp: &Bound<'_, PyAny>, r#type: i32, payload: Py<PyAny>) -> PyResult<Self> {
         let ts_float: f64 = timestamp.call_method0("timestamp")?.extract()?;
         let timestamp_micros = (ts_float * 1_000_000.0) as i64;
 
@@ -48,9 +49,13 @@ impl Event {
     }
 
     #[getter]
-    fn timestamp<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyDateTime>> {
+    fn timestamp<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyAny>> {
         let ts_float = self.timestamp_micros as f64 / 1_000_000.0;
-        PyDateTime::from_timestamp(py, ts_float, None)
+        let datetime_mod = py.import("datetime")?;
+        let dt_class = datetime_mod.getattr("datetime")?;
+        let tz_mod = datetime_mod.getattr("timezone")?;
+        let utc = tz_mod.getattr("utc")?;
+        dt_class.call_method1("fromtimestamp", (ts_float, utc))
     }
 
     fn __repr__(&self) -> String {
@@ -113,7 +118,7 @@ impl Order {
         quantity: f64,
         price: Option<f64>,
         stop_price: Option<f64>,
-        timestamp: Option<Bound<'_, PyDateTime>>,
+        timestamp: Option<Bound<'_, PyAny>>,
         status: String,
         filled_quantity: f64,
         average_fill_price: f64,
@@ -123,12 +128,9 @@ impl Order {
             let ts_float: f64 = ts.call_method0("timestamp")?.extract()?;
             (ts_float * 1_000_000.0) as i64
         } else {
-            let datetime_mod = py.import("datetime")?;
-            let datetime_class = datetime_mod.getattr("datetime")?;
-            let timezone = datetime_mod.getattr("timezone")?;
-            let utc = timezone.getattr("utc")?;
-            let now = datetime_class.call_method1("now", (utc,))?;
-            let ts_float: f64 = now.call_method0("timestamp")?.extract()?;
+            let new_event_payload: Py<PyAny> = py.None().into();
+            let now_obj = py.import("datetime")?.getattr("datetime")?.call_method1("now", (py.import("datetime")?.getattr("timezone")?.getattr("utc")?,))?;
+            let ts_float: f64 = now_obj.call_method0("timestamp")?.extract()?;
             (ts_float * 1_000_000.0) as i64
         };
 
@@ -149,9 +151,13 @@ impl Order {
     }
 
     #[getter]
-    fn timestamp<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyDateTime>> {
+    fn timestamp<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyAny>> {
         let ts_float = self.timestamp_micros as f64 / 1_000_000.0;
-        PyDateTime::from_timestamp(py, ts_float, None)
+        let datetime_mod = py.import("datetime")?;
+        let dt_class = datetime_mod.getattr("datetime")?;
+        let tz_mod = datetime_mod.getattr("timezone")?;
+        let utc = tz_mod.getattr("utc")?;
+        dt_class.call_method1("fromtimestamp", (ts_float, utc))
     }
 
     fn __repr__(&self) -> String {
@@ -190,7 +196,7 @@ impl Trade {
         side: String,
         quantity: f64,
         price: f64,
-        timestamp: &Bound<'_, PyDateTime>,
+        timestamp: &Bound<'_, PyAny>,
         fee: f64,
         pnl: f64,
     ) -> PyResult<Self> {
@@ -221,7 +227,7 @@ impl Trade {
         side: String,
         quantity: f64,
         price: f64,
-        timestamp: &Bound<'_, PyDateTime>,
+        timestamp: &Bound<'_, PyAny>,
         fee: f64,
         pnl: f64,
     ) -> PyResult<Self> {
@@ -229,9 +235,13 @@ impl Trade {
     }
 
     #[getter]
-    fn timestamp<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyDateTime>> {
+    fn timestamp<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyAny>> {
         let ts_float = self.timestamp_micros as f64 / 1_000_000.0;
-        PyDateTime::from_timestamp(py, ts_float, None)
+        let datetime_mod = py.import("datetime")?;
+        let dt_class = datetime_mod.getattr("datetime")?;
+        let tz_mod = datetime_mod.getattr("timezone")?;
+        let utc = tz_mod.getattr("utc")?;
+        dt_class.call_method1("fromtimestamp", (ts_float, utc))
     }
 
     fn __repr__(&self) -> String {

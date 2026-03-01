@@ -1,5 +1,6 @@
 use pyo3::prelude::*;
-use pyo3::types::{PyDict, PyList, PyDateTime};
+use pyo3::Py;
+use pyo3::types::{PyDict, PyList};
 use std::collections::HashMap;
 use crate::models::{Order, Trade, Position, Event};
 use crate::liquidation::LiquidationEngine;
@@ -50,7 +51,7 @@ impl Broker {
     }
 
     #[getter]
-    fn positions(&self, py: Python<'_>) -> PyResult<PyObject> {
+    fn positions(&self, py: Python<'_>    ) -> PyResult<Py<PyAny>> {
         let dict = PyDict::new(py);
         for (symbol, pos) in &self.positions {
             dict.set_item(symbol, pos)?;
@@ -59,7 +60,7 @@ impl Broker {
     }
 
     #[getter]
-    fn open_orders(&self, py: Python<'_>) -> PyResult<PyObject> {
+    fn open_orders(&self, py: Python<'_>    ) -> PyResult<Py<PyAny>> {
         let dict = PyDict::new(py);
         for (id, order) in &self.open_orders {
             dict.set_item(id, order)?;
@@ -68,7 +69,7 @@ impl Broker {
     }
 
     #[getter]
-    fn trades(&self, py: Python<'_>) -> PyResult<PyObject> {
+    fn trades(&self, py: Python<'_>    ) -> PyResult<Py<PyAny>> {
         let list = PyList::empty(py);
         for trade in &self.trades {
             list.append(trade)?;
@@ -77,7 +78,7 @@ impl Broker {
     }
 
     #[getter]
-    fn order_history(&self, py: Python<'_>) -> PyResult<PyObject> {
+    fn order_history(&self, py: Python<'_>    ) -> PyResult<Py<PyAny>> {
         let list = PyList::empty(py);
         for order in &self.order_history {
             list.append(order)?;
@@ -187,9 +188,9 @@ impl Broker {
 
         let symbol: String = payload.get_item("symbol")?.unwrap().extract()?;
         let current_price: f64 = payload.get_item("close")?.unwrap().extract()?;
-        let open_price: f64 = payload.get_item("open")?.map(|i| i.extract().unwrap_or(current_price)).unwrap_or(current_price);
-        let high_price: f64 = payload.get_item("high")?.map(|i| i.extract().unwrap_or(current_price)).unwrap_or(current_price);
-        let low_price: f64 = payload.get_item("low")?.map(|i| i.extract().unwrap_or(current_price)).unwrap_or(current_price);
+        let open_price: f64 = payload.get_item("open")?.map(|i: Bound<'_, PyAny>| i.extract::<f64>().unwrap_or(current_price)).unwrap_or(current_price);
+        let high_price: f64 = payload.get_item("high")?.map(|i: Bound<'_, PyAny>| i.extract::<f64>().unwrap_or(current_price)).unwrap_or(current_price);
+        let low_price: f64 = payload.get_item("low")?.map(|i: Bound<'_, PyAny>| i.extract::<f64>().unwrap_or(current_price)).unwrap_or(current_price);
 
         // let timestamp = event.timestamp(py)?;
         // We need timestamp for Trade. event.timestamp_micros is i64.
@@ -320,13 +321,13 @@ impl Broker {
             };
 
             if should_fill {
-                let price = fill_price.unwrap();
+                let fill_price_val: f64 = fill_price.unwrap();
                 let trade = self.execute_trade_internal(
                     order_id.clone(),
                     order_symbol,
                     order_side,
                     order_qty,
-                    price,
+                    fill_price_val,
                     order_leverage,
                     event.timestamp_micros,
                     is_taker,
@@ -338,7 +339,7 @@ impl Broker {
                     let mut order = order_py.borrow_mut(py);
                     order.status = "FILLED".to_string();
                     order.filled_quantity = order_qty;
-                    order.average_fill_price = price;
+                    order.average_fill_price = fill_price_val;
                 }
 
                 new_fills.push(trade);
@@ -355,8 +356,8 @@ impl Broker {
 
     fn process_funding_event(&mut self, event: &Event, py: Python<'_>) -> PyResult<()> {
         let payload: &Bound<'_, PyDict> = event.payload.bind(py).downcast()?;
-        let symbol: Option<String> = payload.get_item("symbol")?.map(|i| i.extract().ok()).flatten();
-        let funding_rate: Option<f64> = payload.get_item("funding_rate")?.map(|i| i.extract().ok()).flatten();
+        let symbol: Option<String> = payload.get_item("symbol")?.and_then(|i: Bound<'_, PyAny>| i.extract::<String>().ok());
+        let funding_rate: Option<f64> = payload.get_item("funding_rate")?.and_then(|i: Bound<'_, PyAny>| i.extract::<f64>().ok());
 
         if let (Some(sym), Some(rate)) = (symbol, funding_rate) {
              if let Some(pos_py) = self.positions.get(&sym) {
@@ -439,7 +440,11 @@ impl Broker {
         // But here we want to construct Trade and return Py<Trade>.
         // We can create PyDateTime from timestamp_micros.
         let ts_float = timestamp_micros as f64 / 1_000_000.0;
-        let ts_obj = PyDateTime::from_timestamp(py, ts_float, None)?;
+        let datetime_mod = py.import("datetime")?;
+        let dt_class = datetime_mod.getattr("datetime")?;
+        let tz_mod = datetime_mod.getattr("timezone")?;
+        let utc = tz_mod.getattr("utc")?;
+        let ts_obj = dt_class.call_method1("fromtimestamp", (ts_float, utc))?;
 
         let trade = Trade::new_internal(
             Uuid::new_v4().to_string(),

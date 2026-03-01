@@ -8,6 +8,6 @@ name = "simulation_core"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.23.5", features = ["extension-module"] }
+pyo3 = { version = "0.28.2", features = ["extension-module"] }
 chrono = "0.4"
 uuid = { version = "1.10.0", features = ["v4", "fast-rng"] }

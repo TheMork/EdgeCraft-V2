@@ -1,5 +1,6 @@
 use pyo3::prelude::*;
-use pyo3::types::PyDateTime;
+use pyo3::types::PyAny;
+use pyo3::Py;
 use std::collections::{BinaryHeap, HashMap};
 use std::sync::Mutex;
 
@@ -14,7 +15,7 @@ use broker::Broker;
 // EventLoop implementation
 struct EventLoopState {
     queue: BinaryHeap<Event>,
-    handlers: HashMap<i32, Vec<PyObject>>,
+    handlers: HashMap<i32, Vec<Py<PyAny>>>,
     current_time: Option<i64>,
     processed_events_count: usize,
 }
@@ -46,7 +47,7 @@ impl EventLoop {
         self.state.lock().unwrap().queue.push(event_clone);
     }
 
-    fn subscribe(&self, event_type: i32, handler: PyObject) {
+    fn subscribe(&self, event_type: i32, handler: Py<PyAny>) {
         self.state.lock().unwrap().handlers.entry(event_type).or_default().push(handler);
     }
 
@@ -56,12 +57,16 @@ impl EventLoop {
     }
 
     #[getter]
-    fn current_time<'py>(&self, py: Python<'py>) -> PyResult<Option<Bound<'py, PyDateTime>>> {
+    fn current_time<'py>(&self, py: Python<'py>) -> PyResult<Option<Bound<'py, PyAny>>> {
         let state = self.state.lock().unwrap();
         match state.current_time {
             Some(ts_micros) => {
                  let ts_float = ts_micros as f64 / 1_000_000.0;
-                 Ok(Some(PyDateTime::from_timestamp(py, ts_float, None)?))
+                 let datetime_mod = py.import("datetime")?;
+                 let dt_class = datetime_mod.getattr("datetime")?;
+                 let tz_mod = datetime_mod.getattr("timezone")?;
+                 let utc = tz_mod.getattr("utc")?;
+                 Ok(Some(dt_class.call_method1("fromtimestamp", (ts_float, utc))?))
             },
             None => Ok(None)
         }
@@ -93,17 +98,17 @@ impl EventLoop {
                 state.processed_events_count += 1;
             }
 
-            let handlers: Option<Vec<PyObject>> = {
+            let handlers: Option<Vec<Py<PyAny>>> = {
                 let state = self.state.lock().unwrap();
                 if let Some(handlers_vec) = state.handlers.get(&event.r#type) {
-                    Some(handlers_vec.iter().map(|h| h.clone_ref(py)).collect())
+                    Some(handlers_vec.iter().map(|h: &Py<PyAny>| h.clone_ref(py)).collect())
                 } else {
                     None
                 }
             };
 
             if let Some(handlers) = handlers {
-                 let py_event = Py::new(py, event.clone_ref(py))?;
+                 let py_event: Py<Event> = Py::new(py, event.clone_ref(py))?;
                  for handler in handlers {
                      handler.call1(py, (py_event.clone_ref(py),))?;
                  }
