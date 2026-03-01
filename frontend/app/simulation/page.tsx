@@ -24,7 +24,7 @@ interface SyncStartResponse {
   message: string;
   job_id?: string;
 }
-type SyncMode = 'trades' | 'candles';
+type SyncMode = 'trades' | 'candles' | 'candles_1m' | 'candles_all';
 
 interface SyncJobStatusResponse {
   job_id: string;
@@ -97,6 +97,7 @@ export default function SimulationPage() {
   const [isRunning, setIsRunning] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [streamMarketData, setStreamMarketData] = useState(false);
+  const [autoDownloadData, setAutoDownloadData] = useState(true);
   const [enableShorts, setEnableShorts] = useState(true);
   const [leverage, setLeverage] = useState(2);
   const [minLeverage, setMinLeverage] = useState(1);
@@ -299,7 +300,7 @@ export default function SimulationPage() {
     }
   };
 
-  const startSimulation = () => {
+  const startSimulation = async () => {
     if (isRunning) return;
 
     setIsRunning(true);
@@ -307,6 +308,56 @@ export default function SimulationPage() {
     setMetrics(null);
     chartRef.current?.setData([]); // Clear chart
     equityChartRef.current?.setData([]); // Clear equity chart
+
+    if (autoDownloadData) {
+      log('Checking data coverage...');
+      let needsSync = false;
+      if (!coverage || !coverage.available_start || !coverage.available_end) {
+        needsSync = true;
+      } else {
+        const startReq = new Date(startDate).getTime();
+        const endReq = new Date(endDate).getTime();
+        const startCov = new Date(coverage.available_start).getTime();
+        const endCov = new Date(coverage.available_end).getTime();
+        // Allow a small margin (e.g., 1 day) for boundaries if needed, but strictly:
+        if (startReq < startCov || endReq > endCov) {
+          needsSync = true;
+        }
+      }
+
+      if (needsSync) {
+        log('Data missing for requested range. Auto-downloading...');
+        setSyncMessage('Auto-downloading missing data...');
+        try {
+          const response = await api.post<SyncStartResponse>('/api/v1/data/sync', {
+            symbols: [selectedSymbol],
+            start_date: startDate,
+            end_date: endDate,
+            sync_mode: 'candles',
+            timeframes: [selectedTimeframe],
+          });
+          const jobId = response.data.job_id;
+          if (jobId) {
+            log(`Sync job started: ${jobId}`);
+            await pollSyncJob(jobId, 'Auto-download');
+            await fetchCoverage(selectedSymbol, selectedTimeframe);
+            log('Auto-download complete.');
+          } else {
+            log('No sync job ID returned. Proceeding...');
+          }
+        } catch (error: any) {
+          console.error('Auto-download failed:', error);
+          log('Auto-download failed: ' + formatApiError(error));
+          setIsRunning(false);
+          setSyncMessage('Simulation aborted due to auto-download failure.');
+          return;
+        } finally {
+          setSyncMessage('');
+        }
+      } else {
+        log('Data coverage is sufficient.');
+      }
+    }
 
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
     const wsBaseUrl = apiUrl.replace(/^http/, 'ws');
@@ -518,6 +569,10 @@ export default function SimulationPage() {
     await startSingleSync('trades', 'Syncing trades for');
   };
 
+  const handleSyncAllTimeframes = async () => {
+    await startSingleSync('candles_all', `Syncing all candle timeframes for`);
+  };
+
   const handleSyncTop20 = async () => {
     setIsSyncing(true);
     setSyncMessage('Syncing Top 20...');
@@ -616,6 +671,13 @@ export default function SimulationPage() {
                 {isSyncing ? '...' : 'Sync Trades'}
               </Button>
               <Button
+                variant="outline"
+                onClick={handleSyncAllTimeframes}
+                disabled={isSyncing || isRunning}
+              >
+                {isSyncing ? '...' : 'Sync All TF'}
+              </Button>
+              <Button
                 variant="default"
                 onClick={handleSyncTop20}
                 disabled={isSyncing || isRunning}
@@ -696,6 +758,19 @@ export default function SimulationPage() {
                   disabled={isRunning}
                 />
                 <span>{streamMarketData ? 'Animate candles' : 'Fast mode'}</span>
+              </label>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="autoDownloadData">Auto-Download Data</Label>
+              <label className="flex items-center gap-2 h-10 px-3 border border-border rounded bg-muted/20 text-sm">
+                <input
+                  id="autoDownloadData"
+                  type="checkbox"
+                  checked={autoDownloadData}
+                  onChange={(e) => setAutoDownloadData(e.target.checked)}
+                  disabled={isRunning}
+                />
+                <span>{autoDownloadData ? 'Enabled' : 'Disabled'}</span>
               </label>
             </div>
             <div className="space-y-2">
