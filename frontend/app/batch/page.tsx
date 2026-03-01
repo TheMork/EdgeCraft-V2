@@ -235,8 +235,8 @@ export default function BatchPage() {
               <div className="flex justify-between items-center mb-2">
                 <Label className="font-bold">Symbols</Label>
                 <div className="space-x-2">
-                  <Button variant="outline" size="sm" onClick={selectTop20} className="text-xs h-6">Top 20</Button>
-                  <Button variant="outline" size="sm" onClick={clearSymbols} className="text-xs h-6">Clear</Button>
+                  <Button variant="outline" onClick={selectTop20} className="text-xs h-6">Top 20</Button>
+                  <Button variant="outline" onClick={clearSymbols} className="text-xs h-6">Clear</Button>
                 </div>
               </div>
               <div className="h-40 overflow-y-auto space-y-1 bg-black/20 p-2 rounded text-[10px] font-mono">
@@ -255,7 +255,7 @@ export default function BatchPage() {
                   onChange={e => setCustomSymbol(e.target.value)}
                   className="h-8 text-xs"
                 />
-                <Button size="sm" onClick={addCustomSymbol} className="h-8">+</Button>
+                <Button onClick={addCustomSymbol} className="h-8">+</Button>
               </div>
             </div>
 
