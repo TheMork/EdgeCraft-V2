@@ -1,3 +1,7 @@
+import warnings
+
+warnings.warn("This script is deprecated. Use the new SweepEngine via API instead.", DeprecationWarning)
+
 import sys
 import os
 import pandas as pd

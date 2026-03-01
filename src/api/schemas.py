@@ -46,3 +46,38 @@ class DataCoverageResponse(BaseModel):
     ohlcv_start: Optional[datetime]
     ohlcv_end: Optional[datetime]
     ohlcv_ranges: Dict[str, Dict[str, Optional[datetime]]]
+
+class SweepRequest(BaseModel):
+    strategy_name: str
+    symbol: str
+    start_date: str
+    end_date: str
+    timeframe: str = "1h"
+    initial_balance: float = 10000.0
+    leverage: int = 1
+    param_grid: Dict[str, List[Any]]
+    method: Literal["grid", "bayesian"] = "grid"
+    n_trials: Optional[int] = 100
+    processes: Optional[int] = 4
+
+class SweepStartResponse(BaseModel):
+    job_id: str
+    message: str
+
+class SweepStatusResponse(BaseModel):
+    job_id: str
+    status: str
+    progress: int
+    total_combinations: int
+
+class SweepResultData(BaseModel):
+    parameters: Dict[str, Any]
+    sharpe_ratio: float
+    total_return: float
+    max_drawdown: float
+    win_rate: float
+    total_trades: int
+
+class SweepResultsResponse(BaseModel):
+    job_id: str
+    results: List[SweepResultData]

@@ -104,20 +104,20 @@
 **Ziel:** Einheitliches, wiederverwendbares Framework statt Ad-hoc-Sweep-Skripten. UI-gesteuerter Parametersweep per Klick.
 
 #### Sprint 4.1 – Backend Sweep-Engine (1–2 Wochen)
-- [ ] **4.1.1** `SweepEngine` (`src/optimization/sweep_engine.py`) als zentrale Klasse:
+- [x] **4.1.1** `SweepEngine` (`src/optimization/sweep_engine.py`) als zentrale Klasse:
   - Nimmt `SweepConfig` (Strategie-Klasse, Param-Grid als Dict mit Listen) entgegen
   - Führt Grid-Search mit `ProcessPoolExecutor` durch (CPU-bound → Prozesse, nicht Threads)
   - Schreibt Ergebnisse in eine SQLite-Datenbank (`results/sweeps.db`) für spätere Abfrage
-- [ ] **4.1.2** `SweepResult`-Datenmodell: alle Parameter + Metriken (Sharpe, Total Return, Max Drawdown, Win-Rate, Trades)
-- [ ] **4.1.3** Bayesianische Optimierung als Alternative zur Grid-Search einbinden (via `optuna`)
-- [ ] **4.1.4** API-Endpunkte:
+- [x] **4.1.2** `SweepResult`-Datenmodell: alle Parameter + Metriken (Sharpe, Total Return, Max Drawdown, Win-Rate, Trades)
+- [x] **4.1.3** Bayesianische Optimierung als Alternative zur Grid-Search einbinden (via `optuna`)
+- [x] **4.1.4** API-Endpunkte:
   - `POST /api/v1/sweep/start` – startet einen Sweep-Job (gibt `job_id` zurück)
   - `GET /api/v1/sweep/{job_id}/status` – Fortschritt (N von M Kombinationen fertig)
   - `GET /api/v1/sweep/{job_id}/results` – Ergebnistabelle sortiert nach Sharpe-Ratio
   - `DELETE /api/v1/sweep/{job_id}` – Sweep abbrechen
-- [ ] **4.1.5** WebSocket `/ws/sweep/{job_id}` für Echtzeit-Fortschritt im Frontend
-- [ ] **4.1.6** Die bestehenden `sweep_*.py`-Skripte im Root auf die neue `SweepEngine` umstellen (oder als Deprecated markieren)
-- [ ] **4.1.7** Tests: Grid-Erzeugung, Parallelität, Ergebnis-Serialisierung (`tests/test_sweep_engine.py`)
+- [x] **4.1.5** WebSocket `/ws/sweep/{job_id}` für Echtzeit-Fortschritt im Frontend
+- [x] **4.1.6** Die bestehenden `sweep_*.py`-Skripte im Root auf die neue `SweepEngine` umstellen (oder als Deprecated markieren)
+- [x] **4.1.7** Tests: Grid-Erzeugung, Parallelität, Ergebnis-Serialisierung (`tests/test_sweep_engine.py`)
 
 ---
 

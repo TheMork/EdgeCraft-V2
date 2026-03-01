@@ -8,3 +8,4 @@ uvicorn
 maturin==1.12.0
 httpx==0.28.1
 pyarrow
+optuna
