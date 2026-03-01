@@ -78,6 +78,20 @@ async def multi_simulation(request: MultiSimulationRequest):
         strategy_class = MultiIndicatorDivergenceStrategy
     elif request.strategy_name == "mde_mad_entropy":
         strategy_class = MDEMADEntropyStrategy
+    elif request.strategy_name == "mde_mad_classic":
+        strategy_class = ClassicMDEMADEntropyStrategy
+    elif request.strategy_name == "mde_mad_v2":
+        strategy_class = MDEMADV2Strategy
+    elif request.strategy_name in {"mde_mad_v2_leverage", "mde_mad-v2_leverage"}:
+        strategy_class = MDEMADV2LeverageStrategy
+    elif request.strategy_name == "mde_mad_v3":
+        strategy_class = MDEMADV3Strategy
+    elif request.strategy_name == "mde_mad_v3_1":
+        strategy_class = MDEMADV3_1Strategy
+    elif request.strategy_name == "mde_mad_v4":
+        strategy_class = MDEMADV4Strategy
+    elif request.strategy_name.startswith("pair_arbitrage"):
+        strategy_class = PairArbitrageStrategy
     else:
         strategy_class = DemoStrategy
 
@@ -97,7 +111,8 @@ async def multi_simulation(request: MultiSimulationRequest):
 
     return {
         "status": "success",
-        "metrics": result.get("metrics", {})
+        "metrics": _json_safe(result.get("metrics", {})),
+        "equity_curve": _json_safe(result.get("equity_curve", []))
     }
 
 @router.websocket("/ws")
